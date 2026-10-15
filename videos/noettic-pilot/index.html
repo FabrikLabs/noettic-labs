@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Noettic — Voice Skill (pilot)</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <link rel="stylesheet" href="assets/noettic-kit.css" />
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 400; src: url("assets/fonts/inter-latin-400-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 500; src: url("assets/fonts/inter-latin-500-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 600; src: url("assets/fonts/inter-latin-600-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url("assets/fonts/inter-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 800; src: url("assets/fonts/inter-latin-800-normal.woff2") format("woff2"); }
+      @font-face { font-family: "JetBrains Mono"; font-weight: 400; src: url("assets/fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); }
+      @font-face { font-family: "JetBrains Mono"; font-weight: 500; src: url("assets/fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #0a0e1a;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0a0e1a;
+        font-family: "Inter", system-ui, sans-serif;
+        color: #f1f5f9;
+      }
+      #root > div[data-composition-src] { position: absolute; inset: 0; }
+    </style>
+  </head>
+  <body>
+    <!--
+      Timing is generated: run `python3 tools/build-vo.py` after editing SCRIPT.md.
+      It rewrites every data-start / data-duration / beats value below.
+    -->
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-width="1920"
+      data-height="1080"
+      data-duration="72.643"
+    >
+      <div id="kit-ground" data-span="full" data-composition-id="kit-ground" data-composition-src="compositions/kit-ground.html" data-start="0" data-duration="72.643" data-track-index="0" data-variable-values='{"dur": 72.643}'></div>
+
+      <div id="scene-01-hook" data-composition-id="s01-hook" data-composition-src="compositions/s01-hook.html" data-start="0.0" data-duration="9.112" data-track-index="1" data-variable-values='{"beats": "[0.35, 3.386, 4.907, 6.77]", "dur": 9.112}'></div>
+      <div id="scene-02-title" data-composition-id="s02-title" data-composition-src="compositions/s02-title.html" data-start="9.112" data-duration="6.645" data-track-index="1" data-variable-values='{"beats": "[0.35, 2.746]", "dur": 6.645}'></div>
+      <div id="scene-03-what" data-composition-id="s03-what" data-composition-src="compositions/s03-what.html" data-start="15.757" data-duration="11.629" data-track-index="1" data-variable-values='{"beats": "[0.35, 3.685, 5.334, 8.605]", "dur": 11.629}'></div>
+      <div id="scene-04-step1" data-composition-id="s04-step1" data-composition-src="compositions/s04-step1.html" data-start="27.387" data-duration="7.804" data-track-index="1" data-variable-values='{"beats": "[0.35, 1.53, 4.289]", "dur": 7.804}'></div>
+      <div id="scene-05-step2" data-composition-id="s05-step2" data-composition-src="compositions/s05-step2.html" data-start="35.191" data-duration="10.705" data-track-index="1" data-variable-values='{"beats": "[0.35, 1.573, 4.566]", "dur": 10.705}'></div>
+      <div id="scene-06-step3" data-composition-id="s06-step3" data-composition-src="compositions/s06-step3.html" data-start="45.896" data-duration="6.78" data-track-index="1" data-variable-values='{"beats": "[0.35, 1.637, 3.691]", "dur": 6.78}'></div>
+      <div id="scene-07-twist" data-composition-id="s07-twist" data-composition-src="compositions/s07-twist.html" data-start="52.676" data-duration="13.364" data-track-index="1" data-variable-values='{"beats": "[0.35, 2.49, 5.782, 7.666, 8.931]", "dur": 13.364}'></div>
+      <div id="scene-08-close" data-composition-id="s08-close" data-composition-src="compositions/s08-close.html" data-start="66.04" data-duration="6.603" data-track-index="1" data-variable-values='{"beats": "[0.35, 2.639]", "dur": 6.603}'></div>
+
+      <div id="kit-mark" data-span="full" data-composition-id="kit-mark" data-composition-src="compositions/kit-mark.html" data-start="0" data-duration="72.643" data-track-index="2"></div>
+
+      <audio id="vo" data-span="full" src="assets/audio/narration.wav" data-start="0" data-duration="72.643" data-track-index="10" data-volume="1"></audio>
+    </div>
+    <script>
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

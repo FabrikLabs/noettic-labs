@@ -1,0 +1,191 @@
+<!doctype html>
+<html
+  lang="en"
+  data-composition-variables='[
+    {"id":"beats","type":"string","label":"Beat offsets (s)","default":"[0.35, 2.49, 5.782, 7.666, 8.931]"},
+    {"id":"dur","type":"number","label":"Scene length (s)","default":13.364}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Twist — the reviewer skill</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #s07-root { position: absolute; inset: 0; }
+        #s07-row {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 330px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        #s07-draft { display: flex; flex-direction: column; gap: 18px; width: 560px; padding: 34px 36px; }
+        #s07-draft-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+        #s07-draft-label { font-size: 22px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--nk-dim); }
+        #s07-slip { padding: 6px 16px; font-size: 19px; }
+        .s07-copy { font-size: 26px; font-weight: 500; line-height: 1.35; color: #cbd5e1; }
+        #s07-bad { position: relative; display: inline-block; color: var(--nk-text); font-weight: 600; }
+        #s07-bad-hl {
+          position: absolute;
+          left: -6px;
+          right: -6px;
+          top: -2px;
+          bottom: -2px;
+          display: block;
+          border-radius: 8px;
+          background: rgba(245, 158, 11, 0.24);
+          border: 1.5px solid rgba(245, 158, 11, 0.6);
+          transform-origin: left center;
+        }
+        #s07-bad-strike {
+          position: absolute;
+          left: -4px;
+          right: -4px;
+          top: 50%;
+          display: block;
+          height: 4px;
+          margin-top: -2px;
+          border-radius: 2px;
+          background: var(--nk-bad);
+          transform-origin: left center;
+        }
+        #s07-bad-text { position: relative; }
+        .s07-wire { width: 110px; }
+        #s07-rev-col { position: relative; }
+        #s07-rev { width: 360px; height: 250px; gap: 18px; }
+        #s07-rev-glyph { color: #0a0e1a; background: #e2e8f0; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45); font-family: "Inter", system-ui, sans-serif; font-size: 38px; font-weight: 700; }
+        #s07-rev-file { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 20px; color: var(--nk-dim); }
+        #s07-banned {
+          position: absolute;
+          top: 280px;
+          left: -40px;
+          right: -40px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          padding: 24px 28px;
+        }
+        #s07-banned-title { font-size: 19px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--nk-dim); }
+        #s07-banned-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+        .s07-ban {
+          padding: 7px 14px;
+          border-radius: 10px;
+          border: 1px solid rgba(244, 63, 94, 0.55);
+          background: rgba(244, 63, 94, 0.1);
+          font-family: "JetBrains Mono", ui-monospace, monospace;
+          font-size: 19px;
+          color: #fecdd3;
+          white-space: nowrap;
+        }
+        #s07-you { width: 360px; height: 250px; gap: 18px; }
+        #s07-you-glyph {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 96px;
+          height: 96px;
+          border-radius: 50%;
+          background: #1f2848;
+          border: 1.5px solid var(--nk-line-strong);
+          font-size: 34px;
+          font-weight: 700;
+          color: var(--nk-text);
+        }
+        #s07-clean {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 7px 16px;
+          border-radius: 999px;
+          border: 1.5px solid rgba(34, 197, 94, 0.6);
+          background: rgba(34, 197, 94, 0.13);
+          font-size: 19px;
+          font-weight: 600;
+          color: #bbf7d0;
+          white-space: nowrap;
+        }
+        #s07-clean-dot { display: block; width: 10px; height: 10px; border-radius: 50%; background: var(--nk-good); }
+      </style>
+
+      <div id="s07-root" data-composition-id="s07-twist" data-width="1920" data-height="1080">
+        <div id="s07-row">
+          <div class="nk-card" id="s07-draft">
+            <div id="s07-draft-top"><span id="s07-draft-label">Draft 1</span><span class="nk-pill nk-pill-warn" id="s07-slip">Old habit</span></div>
+            <span class="s07-copy">We used to lose a week to client intake.</span>
+            <span class="s07-copy"><span id="s07-bad" data-layout-allow-occlusion><span id="s07-bad-hl"></span><span id="s07-bad-text">Here's the thing:</span><span id="s07-bad-strike"></span></span> most of it was email.</span>
+            <span class="nk-skel" style="width: 92%"></span>
+            <span class="nk-skel" style="width: 70%"></span>
+          </div>
+
+          <span class="nk-wire s07-wire" id="s07-w1"><span class="nk-wire-pulse" id="s07-p1"></span></span>
+
+          <div id="s07-rev-col">
+            <div class="nk-card nk-node" id="s07-rev">
+              <span class="nk-glyph" id="s07-rev-glyph">QA</span>
+              <span class="nk-node-label" id="s07-rev-label">Reviewer</span>
+              <span id="s07-rev-file">review/SKILL.md</span>
+            </div>
+            <div class="nk-card" id="s07-banned">
+              <span id="s07-banned-title">Banned list</span>
+              <div id="s07-banned-chips"><span class="s07-ban">here's the thing</span><span class="s07-ban">let's dive in</span><span class="s07-ban">game-changer</span></div>
+            </div>
+          </div>
+
+          <span class="nk-wire s07-wire" id="s07-w2"><span class="nk-wire-pulse" id="s07-p2"></span></span>
+
+          <div class="nk-card nk-node" id="s07-you">
+            <span id="s07-you-glyph">You</span>
+            <span id="s07-clean"><span id="s07-clean-dot"></span>0 banned phrases</span>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          const v = window.__hyperframes && window.__hyperframes.getVariables ? window.__hyperframes.getVariables() : {};
+          const B = JSON.parse(v.beats || "[0.35, 2.49, 5.782, 7.666, 8.931]");
+          const D = Number(v.dur || 13.364);
+          const tl = gsap.timeline({ paused: true });
+          const rest = ["#s07-w1", "#s07-rev", "#s07-w2", "#s07-you", "#s07-banned"];
+
+          gsap.set(rest, { opacity: 0 });
+          gsap.set(["#s07-slip", "#s07-clean"], { opacity: 0 });
+          gsap.set(["#s07-bad-hl", "#s07-bad-strike"], { scaleX: 0 });
+
+          // Beat 0 — "The first drafts will still slip." The draft starts big and centered.
+          tl.fromTo("#s07-draft", { x: 500, y: 40, scale: 1.25, opacity: 0 }, { x: 500, y: 0, scale: 1.25, opacity: 1, duration: 0.6, ease: "power3.out" }, B[0]);
+          tl.fromTo("#s07-slip", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2.2)", immediateRender: false }, B[0] + 1.2);
+
+          // Beat 1 — 'Old habits like "here's the thing" creep back in.'
+          tl.to("#s07-bad-hl", { scaleX: 1, duration: 0.45, ease: "power2.out" }, B[1] + 0.7);
+
+          // Beat 2 — "So add a second skill:" the draft slides into a pipeline
+          tl.to("#s07-draft", { x: 0, scale: 1, duration: 0.7, ease: "power3.inOut" }, B[2]);
+          tl.fromTo("#s07-w1", { opacity: 1, scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.4, immediateRender: false }, B[2] + 0.5);
+          tl.fromTo("#s07-rev", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, B[2] + 0.75);
+          tl.fromTo("#s07-w2", { opacity: 1, scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.4, immediateRender: false }, B[2] + 1.0);
+          tl.fromTo("#s07-you", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, B[2] + 1.2);
+
+          // Beat 3 — "a reviewer."
+          tl.fromTo("#s07-rev-glyph", { scale: 1 }, { scale: 1.15, duration: 0.25, ease: "power2.out", yoyo: true, repeat: 1 }, B[3]);
+          tl.fromTo("#s07-rev-label", { color: "#f1f5f9" }, { color: "#c4b5fd", duration: 0.3 }, B[3]);
+
+          // Beat 4 — "It checks every draft against your banned list before you ever see it."
+          tl.fromTo("#s07-banned", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", immediateRender: false }, B[4] + 0.2);
+          tl.fromTo("#s07-p1", { x: -90 }, { x: 110, duration: 0.6, ease: "power1.inOut", repeat: 1 }, B[4] + 0.6);
+          tl.to("#s07-bad-strike", { scaleX: 1, duration: 0.35, ease: "power2.out" }, B[4] + 1.6);
+          tl.to("#s07-bad-hl", { backgroundColor: "rgba(244, 63, 94, 0.18)", borderColor: "rgba(244, 63, 94, 0.6)", duration: 0.3 }, B[4] + 1.6);
+          tl.fromTo("#s07-p2", { x: -90 }, { x: 110, duration: 0.6, ease: "power1.inOut", repeat: 1 }, B[4] + 2.2);
+          tl.fromTo("#s07-clean", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(2.2)", immediateRender: false }, B[4] + 3.3);
+
+          tl.to("#s07-root", { opacity: 0, duration: 0.3, ease: "power1.in" }, D - 0.35);
+          window.__timelines["s07-twist"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

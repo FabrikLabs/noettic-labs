@@ -1,0 +1,233 @@
+/* Noettic video kit — shared tokens and building blocks for every scene.
+   Colors and type match noetticlabs.com (index.html :root). */
+
+:root {
+  --nk-bg: #0a0e1a;
+  --nk-bg-2: #0f1326;
+  --nk-card: #121831;
+  --nk-card-2: #182041;
+  --nk-line: rgba(255, 255, 255, 0.08);
+  --nk-line-strong: rgba(255, 255, 255, 0.16);
+  --nk-skel: rgba(148, 163, 184, 0.18);
+  --nk-text: #f1f5f9;
+  --nk-muted: #94a3b8;
+  --nk-dim: #8391a7;
+  --nk-accent: #3b82f6;
+  --nk-cyan: #06b6d4;
+  --nk-purple: #8b5cf6;
+  --nk-warn: #f59e0b;
+  --nk-bad: #f43f5e;
+  --nk-good: #22c55e;
+  --nk-grad: linear-gradient(135deg, #3b82f6, #06b6d4);
+  --nk-radius: 22px;
+  --nk-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* Card: the dark rounded panel every UI mock sits on */
+.nk-card {
+  position: relative;
+  background: var(--nk-card);
+  border: 1px solid var(--nk-line);
+  border-radius: var(--nk-radius);
+  box-shadow: var(--nk-shadow);
+}
+
+/* Window chrome: three dots across the top of an app or terminal mock */
+.nk-window {
+  position: relative;
+  background: #0d1224;
+  border: 1px solid var(--nk-line);
+  border-radius: var(--nk-radius);
+  box-shadow: var(--nk-shadow);
+  overflow: hidden;
+}
+.nk-window-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 58px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--nk-line);
+}
+.nk-dot {
+  display: block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #334155;
+}
+.nk-window-title {
+  margin-left: 14px;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--nk-muted);
+}
+
+/* Terminal text */
+.nk-mono {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+.nk-term {
+  padding: 34px 40px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 27px;
+  line-height: 1.55;
+  color: var(--nk-text);
+}
+.nk-term-line {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  white-space: nowrap;
+  margin-bottom: 18px;
+}
+.nk-prompt {
+  color: var(--nk-dim);
+}
+.nk-bullet {
+  display: block;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--nk-accent);
+  transform: translateY(-3px);
+}
+.nk-sub {
+  color: var(--nk-muted);
+  padding-left: 30px;
+}
+/* Typing: wrap text in .nk-type and tween its width with a steps() ease */
+.nk-type {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+/* Skeleton bar: stand-in for text that isn't the point of the shot */
+.nk-skel {
+  display: block;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--nk-skel);
+}
+
+/* Pill / badge */
+.nk-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: 1.5px solid var(--nk-line-strong);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--nk-text);
+  white-space: nowrap;
+}
+.nk-pill-accent {
+  border-color: rgba(59, 130, 246, 0.55);
+  background: rgba(59, 130, 246, 0.14);
+  color: #bfdbfe;
+}
+.nk-pill-warn {
+  border-color: rgba(245, 158, 11, 0.6);
+  background: rgba(245, 158, 11, 0.14);
+  color: #fde68a;
+}
+
+/* Node: an icon tile with a label, joined to other nodes by .nk-wire */
+.nk-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  width: 300px;
+  height: 260px;
+}
+.nk-node-label {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--nk-text);
+}
+.nk-glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 108px;
+  height: 108px;
+  border-radius: 28px;
+  background: var(--nk-grad);
+  box-shadow: 0 0 60px rgba(59, 130, 246, 0.45);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 46px;
+  font-weight: 500;
+  color: #0a0e1a;
+}
+.nk-wire {
+  position: relative;
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: #273049;
+  overflow: hidden;
+}
+.nk-wire-pulse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 90px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--nk-grad);
+  box-shadow: 0 0 18px var(--nk-cyan);
+}
+
+/* File card: a document tile with a filename and skeleton lines */
+.nk-file-name {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 26px;
+  color: var(--nk-text);
+}
+.nk-file-icon {
+  display: block;
+  width: 34px;
+  height: 42px;
+  border-radius: 6px;
+  border: 2.5px solid var(--nk-cyan);
+}
+
+/* Step header: the big "01 / label" marker at the top-left of a step scene */
+.nk-step {
+  position: absolute;
+  top: 84px;
+  left: 120px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.nk-step-num {
+  font-size: 76px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: var(--nk-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.nk-step-label {
+  font-size: 40px;
+  font-weight: 600;
+  color: var(--nk-text);
+}
+
+/* Highlight a phrase inside mock copy */
+.nk-mark {
+  display: inline;
+  padding: 0 6px;
+  border-radius: 8px;
+}

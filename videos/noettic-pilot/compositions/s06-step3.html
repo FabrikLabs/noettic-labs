@@ -1,0 +1,106 @@
+<!doctype html>
+<html
+  lang="en"
+  data-composition-variables='[
+    {"id":"beats","type":"string","label":"Beat offsets (s)","default":"[0.35, 1.637, 3.691]"},
+    {"id":"dur","type":"number","label":"Scene length (s)","default":6.78}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Step 3 — ask for the post</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #s06-root { position: absolute; inset: 0; }
+        #s06-stage {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 230px;
+          bottom: 110px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 48px;
+        }
+        #s06-term { width: 900px; height: 470px; }
+        #s06-loaded {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          padding: 4px 16px;
+          border-radius: 10px;
+          background: rgba(59, 130, 246, 0.16);
+          border: 1.5px solid rgba(59, 130, 246, 0.6);
+          color: #bfdbfe;
+        }
+        #s06-post { display: flex; flex-direction: column; gap: 20px; width: 640px; padding: 38px 40px; }
+        #s06-post-head { display: flex; align-items: center; gap: 18px; margin-bottom: 6px; }
+        #s06-avatar { display: block; width: 60px; height: 60px; border-radius: 50%; background: var(--nk-grad); }
+        #s06-who { display: flex; flex-direction: column; gap: 10px; }
+        #s06-first { font-size: 31px; font-weight: 600; line-height: 1.3; color: var(--nk-text); }
+        .s06-bar { transform-origin: left center; }
+      </style>
+
+      <div id="s06-root" data-composition-id="s06-step3" data-width="1920" data-height="1080">
+        <div class="nk-step" id="s06-step"><span class="nk-step-num">03</span><span class="nk-step-label">Ask for the post</span></div>
+
+        <div id="s06-stage">
+          <div class="nk-window" id="s06-term">
+            <div class="nk-window-bar"><span class="nk-dot"></span><span class="nk-dot"></span><span class="nk-dot"></span><span class="nk-window-title">~/my-brand — claude</span></div>
+            <div class="nk-term">
+              <div class="nk-term-line"><span class="nk-prompt">&gt;</span><span class="nk-type" id="s06-typed">write a LinkedIn post about client intake</span></div>
+              <div class="nk-term-line" id="s06-l1"><span class="nk-bullet"></span><span id="s06-loaded">Skill(voice) loaded</span></div>
+              <div class="nk-term-line" id="s06-l2"><span class="nk-bullet"></span><span>Writing draft…</span></div>
+            </div>
+          </div>
+
+          <div class="nk-card" id="s06-post">
+            <div id="s06-post-head">
+              <span id="s06-avatar"></span>
+              <div id="s06-who"><span class="nk-skel" style="width: 170px"></span><span class="nk-skel" style="width: 110px; height: 11px"></span></div>
+            </div>
+            <span id="s06-first">We used to lose a week to client intake.</span>
+            <span class="nk-skel s06-bar" style="width: 100%"></span>
+            <span class="nk-skel s06-bar" style="width: 88%"></span>
+            <span class="nk-skel s06-bar" style="width: 94%"></span>
+            <span class="nk-skel s06-bar" style="width: 62%"></span>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          const v = window.__hyperframes && window.__hyperframes.getVariables ? window.__hyperframes.getVariables() : {};
+          const B = JSON.parse(v.beats || "[0.35, 1.637, 3.691]");
+          const D = Number(v.dur || 6.78);
+          const tl = gsap.timeline({ paused: true });
+          const typed = "write a LinkedIn post about client intake";
+          const scene = document.querySelector('[data-composition-id="s06-step3"]');
+
+          gsap.set(["#s06-l1", "#s06-l2", "#s06-post"], { opacity: 0 });
+
+          // Beat 0 — "Step three."
+          tl.fromTo("#s06-step", { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.55, ease: "power3.out" }, B[0]);
+          tl.fromTo("#s06-term", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, B[0] + 0.25);
+
+          // Beat 1 — "Ask for a LinkedIn post."
+          tl.fromTo("#s06-typed", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 1.2, ease: "steps(" + typed.length + ")" }, B[1]);
+
+          // Beat 2 — "Claude loads the skill first, then writes."
+          tl.fromTo("#s06-l1", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.3, immediateRender: false }, B[2]);
+          tl.fromTo("#s06-loaded", { scale: 0.85 }, { scale: 1, duration: 0.4, ease: "back.out(2.5)" }, B[2]);
+          tl.fromTo("#s06-l2", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.3, immediateRender: false }, B[2] + 1.0);
+          tl.fromTo("#s06-post", { x: 50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out", immediateRender: false }, B[2] + 1.1);
+          tl.fromTo("#s06-first", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.9, ease: "steps(40)" }, B[2] + 1.4);
+          tl.fromTo(scene.querySelectorAll(".s06-bar"), { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power1.out", stagger: 0.18 }, B[2] + 2.0);
+
+          tl.to("#s06-root", { opacity: 0, duration: 0.3, ease: "power1.in" }, D - 0.35);
+          window.__timelines["s06-step3"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

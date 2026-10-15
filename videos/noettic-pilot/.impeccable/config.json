@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "videos/noettic-pilot/index.html"
+        ],
+        "createdAt": "2026-10-15T03:30:19.996Z",
+        "reason": "Claude: corner-mark dot mirrors the existing noetticlabs.com logo glow (.logo span text-shadow accent-glow); brand element, not decoration"
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "files": [
+          "videos/noettic-pilot/compositions/s07-twist.html"
+        ],
+        "createdAt": "2026-10-15T03:39:01.729Z",
+        "reason": "Claude: Inter is the existing noetticlabs.com brand font (index.html body font-family)"
+      }
+    ]
+  }
+}

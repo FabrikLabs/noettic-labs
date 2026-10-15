@@ -1,0 +1,141 @@
+<!doctype html>
+<html
+  lang="en"
+  data-composition-variables='[
+    {"id":"beats","type":"string","label":"Beat offsets (s)","default":"[0.35, 1.53, 4.289]"},
+    {"id":"dur","type":"number","label":"Scene length (s)","default":7.804}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Step 1 — feed Claude your best writing</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #s04-root { position: absolute; inset: 0; }
+        #s04-stage {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 250px;
+          bottom: 120px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 70px;
+        }
+        #s04-grid {
+          display: grid;
+          grid-template-columns: repeat(5, 172px);
+          gap: 22px;
+        }
+        .s04-doc {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          height: 236px;
+          padding: 22px 20px;
+          border-radius: 18px;
+        }
+        .s04-tag {
+          align-self: flex-start;
+          padding: 5px 13px;
+          border-radius: 999px;
+          border: 1.5px solid var(--nk-line-strong);
+          font-size: 17px;
+          font-weight: 600;
+          color: var(--nk-muted);
+          margin-bottom: 6px;
+        }
+        .s04-tag-lit {
+          position: absolute;
+          left: 20px;
+          top: 22px;
+          padding: 5px 13px;
+          border-radius: 999px;
+          border: 1.5px solid rgba(6, 182, 212, 0.8);
+          background: rgba(6, 182, 212, 0.2);
+          font-size: 17px;
+          font-weight: 600;
+          color: #cffafe;
+        }
+        .s04-doc .nk-skel { height: 11px; }
+        #s04-side { display: flex; align-items: center; gap: 0; }
+        #s04-wire { width: 150px; }
+        #s04-claude { width: 320px; height: 330px; gap: 24px; }
+        #s04-count { font-size: 26px; font-weight: 500; color: var(--nk-muted); }
+        #s04-count-num { color: var(--nk-text); font-weight: 700; }
+      </style>
+
+      <div id="s04-root" data-composition-id="s04-step1" data-width="1920" data-height="1080">
+        <div class="nk-step" id="s04-step"><span class="nk-step-num">01</span><span class="nk-step-label">Feed it your best writing</span></div>
+
+        <div id="s04-stage">
+          <div id="s04-grid" data-layout-allow-overlap>
+            <div class="nk-card s04-doc" data-kind="post"><span class="s04-tag">Post</span><span class="s04-tag-lit">Post</span><span class="nk-skel" style="width: 100%"></span><span class="nk-skel" style="width: 80%"></span><span class="nk-skel" style="width: 92%"></span><span class="nk-skel" style="width: 56%"></span></div>
+            <div class="nk-card s04-doc" data-kind="email"><span class="s04-tag">Email</span><span class="s04-tag-lit">Email</span><span class="nk-skel" style="width: 88%"></span><span class="nk-skel" style="width: 100%"></span><span class="nk-skel" style="width: 70%"></span><span class="nk-skel" style="width: 84%"></span></div>
+            <div class="nk-card s04-doc" data-kind="post"><span class="s04-tag">Post</span><span class="s04-tag-lit">Post</span><span class="nk-skel" style="width: 94%"></span><span class="nk-skel" style="width: 62%"></span><span class="nk-skel" style="width: 100%"></span></div>
+            <div class="nk-card s04-doc" data-kind="other"><span class="s04-tag">Essay</span><span class="s04-tag-lit">Essay</span><span class="nk-skel" style="width: 100%"></span><span class="nk-skel" style="width: 100%"></span><span class="nk-skel" style="width: 76%"></span><span class="nk-skel" style="width: 90%"></span></div>
+            <div class="nk-card s04-doc" data-kind="email"><span class="s04-tag">Email</span><span class="s04-tag-lit">Email</span><span class="nk-skel" style="width: 72%"></span><span class="nk-skel" style="width: 96%"></span><span class="nk-skel" style="width: 60%"></span></div>
+            <div class="nk-card s04-doc" data-kind="post"><span class="s04-tag">Post</span><span class="s04-tag-lit">Post</span><span class="nk-skel" style="width: 90%"></span><span class="nk-skel" style="width: 100%"></span><span class="nk-skel" style="width: 66%"></span></div>
+            <div class="nk-card s04-doc" data-kind="other"><span class="s04-tag">Talk</span><span class="s04-tag-lit">Talk</span><span class="nk-skel" style="width: 100%"></span><span class="nk-skel" style="width: 84%"></span><span class="nk-skel" style="width: 92%"></span><span class="nk-skel" style="width: 50%"></span></div>
+            <div class="nk-card s04-doc" data-kind="email"><span class="s04-tag">Email</span><span class="s04-tag-lit">Email</span><span class="nk-skel" style="width: 96%"></span><span class="nk-skel" style="width: 70%"></span><span class="nk-skel" style="width: 88%"></span></div>
+            <div class="nk-card s04-doc" data-kind="post"><span class="s04-tag">Post</span><span class="s04-tag-lit">Post</span><span class="nk-skel" style="width: 78%"></span><span class="nk-skel" style="width: 100%"></span><span class="nk-skel" style="width: 64%"></span><span class="nk-skel" style="width: 86%"></span></div>
+            <div class="nk-card s04-doc" data-kind="other"><span class="s04-tag">Newsletter</span><span class="s04-tag-lit">Newsletter</span><span class="nk-skel" style="width: 100%"></span><span class="nk-skel" style="width: 74%"></span><span class="nk-skel" style="width: 90%"></span></div>
+          </div>
+
+          <div id="s04-side">
+            <span class="nk-wire" id="s04-wire"><span class="nk-wire-pulse" id="s04-pulse"></span></span>
+            <div class="nk-card nk-node" id="s04-claude">
+              <span class="nk-glyph" id="s04-glyph">›_</span>
+              <span class="nk-node-label">Claude</span>
+              <span id="s04-count"><span id="s04-count-num">0</span> / 10 samples</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          const v = window.__hyperframes && window.__hyperframes.getVariables ? window.__hyperframes.getVariables() : {};
+          const B = JSON.parse(v.beats || "[0.35, 1.53, 4.289]");
+          const D = Number(v.dur || 7.804);
+          const tl = gsap.timeline({ paused: true });
+          const scene = document.querySelector('[data-composition-id="s04-step1"]');
+          const docs = Array.from(scene.querySelectorAll(".s04-doc"));
+          const lit = (kind) => docs.filter((d) => d.dataset.kind === kind).map((d) => d.querySelector(".s04-tag-lit"));
+          const countEl = scene.querySelector("#s04-count-num");
+
+          gsap.set(scene.querySelectorAll(".s04-tag-lit"), { opacity: 0 });
+
+          // Beat 0 — "Step one."
+          tl.fromTo("#s04-step", { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.55, ease: "power3.out" }, B[0]);
+          tl.fromTo("#s04-claude", { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out" }, B[0] + 0.2);
+          tl.fromTo("#s04-wire", { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.5 }, B[0] + 0.5);
+
+          // Beat 1 — "Give Claude ten pieces of your best writing."
+          tl.fromTo(docs, { y: 50, opacity: 0, scale: 0.9 }, { y: 0, opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.6)", stagger: 0.13 }, B[1]);
+          const counter = { n: 0 };
+          tl.to(counter, {
+            n: 10,
+            duration: 1.3,
+            ease: "none",
+            onUpdate: () => { countEl.textContent = String(Math.round(counter.n)); },
+          }, B[1] + 0.2);
+
+          // Beat 2 — "Posts, emails, anything that sounds like you."
+          tl.to(lit("post"), { opacity: 1, duration: 0.25, stagger: 0.05 }, B[2]);
+          tl.to(lit("email"), { opacity: 1, duration: 0.25, stagger: 0.05 }, B[2] + 0.7);
+          tl.to(lit("other"), { opacity: 1, duration: 0.25, stagger: 0.05 }, B[2] + 1.4);
+          tl.fromTo("#s04-pulse", { x: -90 }, { x: 150, duration: 0.6, ease: "power1.inOut", repeat: 2 }, B[2] + 1.7);
+          tl.to(docs, { x: 120, opacity: 0, scale: 0.6, duration: 0.5, ease: "power2.in", stagger: { each: 0.04, from: "end" } }, B[2] + 2.0);
+          tl.fromTo("#s04-glyph", { scale: 1 }, { scale: 1.14, duration: 0.25, ease: "power2.out", yoyo: true, repeat: 1 }, B[2] + 2.5);
+
+          tl.to("#s04-root", { opacity: 0, duration: 0.3, ease: "power1.in" }, D - 0.35);
+          window.__timelines["s04-step1"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

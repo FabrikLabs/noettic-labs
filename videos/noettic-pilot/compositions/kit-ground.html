@@ -1,0 +1,56 @@
+<!doctype html>
+<html
+  lang="en"
+  data-composition-variables='[
+    {"id":"dur","type":"number","label":"Video length (s)","default":72.643}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Kit — Noettic ground (navy, dot grid, drifting glow)</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #kit-ground-root { position: absolute; inset: 0; overflow: hidden; background: #0a0e1a; }
+        #kg-dots {
+          position: absolute;
+          inset: 0;
+          background-image: radial-gradient(rgba(148, 163, 184, 0.13) 1.5px, transparent 1.5px);
+          background-size: 34px 34px;
+        }
+        #kg-glow {
+          position: absolute;
+          left: 460px;
+          top: 40px;
+          width: 1000px;
+          height: 1000px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(59, 130, 246, 0.16), rgba(6, 182, 212, 0.05) 45%, transparent 70%);
+        }
+        #kg-vignette {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(ellipse at center, transparent 55%, rgba(4, 6, 14, 0.75) 100%);
+        }
+      </style>
+
+      <div id="kit-ground-root" data-composition-id="kit-ground" data-width="1920" data-height="1080">
+        <div id="kg-dots"></div>
+        <div id="kg-glow"></div>
+        <div id="kg-vignette"></div>
+      </div>
+
+      <script>
+        (function () {
+          const v = window.__hyperframes && window.__hyperframes.getVariables ? window.__hyperframes.getVariables() : {};
+          const D = Number(v.dur || 72.643);
+          const tl = gsap.timeline({ paused: true });
+          // One slow drift there and back across the whole video, so the ground never looks frozen
+          tl.fromTo("#kg-glow", { x: -120, y: 30, scale: 0.95 }, { x: 120, y: -30, scale: 1.08, duration: D / 2, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0);
+          window.__timelines["kit-ground"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "marketing-buzzword",
+        "value": "*",
+        "files": [
+          "videos/noettic-pilot/compositions/s01-hook.html"
+        ],
+        "createdAt": "2026-10-15T03:39:07.506Z",
+        "reason": "Claude: the flagged phrase ('game-changer') is shown on screen as an example of a banned AI cliché, not used as copy"
+      },
+      {
+        "rule": "marketing-buzzword",
+        "value": "*",
+        "files": [
+          "videos/noettic-pilot/compositions/s05-step2.html"
+        ],
+        "createdAt": "2026-10-15T03:39:07.523Z",
+        "reason": "Claude: the flagged phrase ('game-changer') is shown on screen as an example of a banned AI cliché, not used as copy"
+      },
+      {
+        "rule": "marketing-buzzword",
+        "value": "*",
+        "files": [
+          "videos/noettic-pilot/compositions/s07-twist.html"
+        ],
+        "createdAt": "2026-10-15T03:39:07.540Z",
+        "reason": "Claude: the flagged phrase ('game-changer') is shown on screen as an example of a banned AI cliché, not used as copy"
+      }
+    ]
+  }
+}

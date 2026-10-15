@@ -1,0 +1,110 @@
+<!doctype html>
+<html
+  lang="en"
+  data-composition-variables='[
+    {"id":"beats","type":"string","label":"Beat offsets (s)","default":"[0.35, 2.639]"},
+    {"id":"dur","type":"number","label":"Scene length (s)","default":6.603}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Close — CTA + end card</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #s08-root { position: absolute; inset: 0; }
+        #s08-cta-wrap {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        #s08-cta { display: flex; flex-direction: column; align-items: center; gap: 26px; width: 760px; padding: 54px 60px 46px; }
+        #s08-files { display: flex; gap: 18px; }
+        .s08-file {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 14px 22px;
+          border-radius: 14px;
+          background: #1a2242;
+          border: 1px solid var(--nk-line-strong);
+        }
+        .s08-file .nk-file-name { font-size: 22px; }
+        .s08-file .nk-file-icon { width: 24px; height: 30px; border-width: 2px; }
+        #s08-cta-title { font-size: 58px; font-weight: 700; letter-spacing: -0.02em; color: var(--nk-text); white-space: nowrap; }
+        #s08-link { font-size: 24px; }
+        #s08-arrow-wrap { display: block; width: 30px; height: 30px; }
+        #s08-arrow {
+          display: block;
+          width: 22px;
+          height: 22px;
+          margin: 0 auto;
+          border-right: 3px solid #bfdbfe;
+          border-bottom: 3px solid #bfdbfe;
+          transform: rotate(45deg);
+        }
+
+        #s08-end {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 30px;
+        }
+        #s08-word { font-size: 104px; font-weight: 800; letter-spacing: 0.12em; color: var(--nk-text); white-space: nowrap; }
+        #s08-word-o { color: var(--nk-accent); }
+        #s08-rule { display: block; width: 520px; height: 2px; background: var(--nk-grad); transform-origin: center; }
+        #s08-verdict { font-size: 40px; font-weight: 500; color: var(--nk-muted); }
+      </style>
+
+      <div id="s08-root" data-composition-id="s08-close" data-width="1920" data-height="1080">
+        <div id="s08-cta-wrap" data-layout-allow-overlap>
+          <div class="nk-card" id="s08-cta">
+            <div id="s08-files">
+              <span class="s08-file"><span class="nk-file-icon"></span><span class="nk-file-name">voice/SKILL.md</span></span>
+              <span class="s08-file"><span class="nk-file-icon"></span><span class="nk-file-name">review/SKILL.md</span></span>
+            </div>
+            <span id="s08-cta-title">Starter voice skill</span>
+            <span class="nk-pill nk-pill-accent" id="s08-link">Link in the description</span>
+            <span id="s08-arrow-wrap"><span id="s08-arrow"></span></span>
+          </div>
+        </div>
+
+        <div id="s08-end" data-layout-allow-overlap>
+          <span id="s08-word">N<span id="s08-word-o">O</span>ETTIC LABS</span>
+          <span id="s08-rule"></span>
+          <span id="s08-verdict">Teach it once.</span>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          const v = window.__hyperframes && window.__hyperframes.getVariables ? window.__hyperframes.getVariables() : {};
+          const B = JSON.parse(v.beats || "[0.35, 2.639]");
+          const D = Number(v.dur || 6.603);
+          const tl = gsap.timeline({ paused: true });
+
+          gsap.set(["#s08-word", "#s08-verdict"], { opacity: 0 });
+          gsap.set("#s08-rule", { scaleX: 0 });
+
+          // Beat 0 — "The starter skill is linked below."
+          tl.fromTo("#s08-cta", { y: 50, opacity: 0, scale: 0.96 }, { y: 0, opacity: 1, scale: 1, duration: 0.6, ease: "power3.out" }, B[0]);
+          tl.fromTo("#s08-arrow-wrap", { y: -6 }, { y: 8, duration: 0.45, ease: "sine.inOut", yoyo: true, repeat: 3 }, B[0] + 0.6);
+
+          // Beat 1 — "Teach it once, and every draft starts sounding like you."
+          tl.to("#s08-cta", { y: -40, opacity: 0, duration: 0.45, ease: "power2.in" }, B[1]);
+          tl.fromTo("#s08-word", { y: 30, opacity: 0, scale: 1.06 }, { y: 0, opacity: 1, scale: 1, duration: 0.9, ease: "power3.out", immediateRender: false }, B[1] + 0.35);
+          tl.to("#s08-rule", { scaleX: 1, duration: 0.7, ease: "power2.inOut" }, B[1] + 0.8);
+          tl.fromTo("#s08-verdict", { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out", immediateRender: false }, B[1] + 1.1);
+
+          window.__timelines["s08-close"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

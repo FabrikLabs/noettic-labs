@@ -1,0 +1,129 @@
+{
+  "total": 72.643,
+  "scenes": [
+    {
+      "id": "01-hook",
+      "beats": [
+        "Your AI writes like everyone else's AI.",
+        "Same openers.",
+        "Same tired phrases.",
+        "And your customers can tell."
+      ],
+      "start": 0.0,
+      "offsets": [
+        0.35,
+        3.386,
+        4.907,
+        6.77
+      ],
+      "duration": 9.112
+    },
+    {
+      "id": "02-title",
+      "beats": [
+        "So build a fix inside Claude.",
+        "It's called a voice skill, and it takes about ten minutes."
+      ],
+      "start": 9.112,
+      "offsets": [
+        0.35,
+        2.746
+      ],
+      "duration": 6.645
+    },
+    {
+      "id": "03-what",
+      "beats": [
+        "A skill is a file Claude reads before it writes.",
+        "It holds your rules:",
+        "how you sound, what you never say, how you end.",
+        "Claude only loads it when the job needs it."
+      ],
+      "start": 15.757,
+      "offsets": [
+        0.35,
+        3.685,
+        5.334,
+        8.605
+      ],
+      "duration": 11.629
+    },
+    {
+      "id": "04-step1",
+      "beats": [
+        "Step one.",
+        "Give Claude ten pieces of your best writing.",
+        "Posts, emails, anything that sounds like you."
+      ],
+      "start": 27.387,
+      "offsets": [
+        0.35,
+        1.53,
+        4.289
+      ],
+      "duration": 7.804
+    },
+    {
+      "id": "05-step2",
+      "beats": [
+        "Step two.",
+        "Ask Claude to study them and write the skill.",
+        "It pulls out your sentence length, your favorite words, and the phrases you would never use."
+      ],
+      "start": 35.191,
+      "offsets": [
+        0.35,
+        1.573,
+        4.566
+      ],
+      "duration": 10.705
+    },
+    {
+      "id": "06-step3",
+      "beats": [
+        "Step three.",
+        "Ask for a LinkedIn post.",
+        "Claude loads the skill first, then writes."
+      ],
+      "start": 45.896,
+      "offsets": [
+        0.35,
+        1.637,
+        3.691
+      ],
+      "duration": 6.78
+    },
+    {
+      "id": "07-twist",
+      "beats": [
+        "The first drafts will still slip.",
+        "Old habits like \"here's the thing\" creep back in.",
+        "So add a second skill:",
+        "a reviewer.",
+        "It checks every draft against your banned list before you ever see it."
+      ],
+      "start": 52.676,
+      "offsets": [
+        0.35,
+        2.49,
+        5.782,
+        7.666,
+        8.931
+      ],
+      "duration": 13.364
+    },
+    {
+      "id": "08-close",
+      "beats": [
+        "The starter skill is linked below.",
+        "Teach it once, and every draft starts sounding like you."
+      ],
+      "start": 66.04,
+      "offsets": [
+        0.35,
+        2.639
+      ],
+      "duration": 6.603
+    }
+  ]
+}
