@@ -2,7 +2,7 @@
 
 The gallery kit is what we install for a gallery client. It has four parts.
 
-1. **Notion template.** Six linked databases: Contacts, Touches, Artworks, Consignments, Exhibitions, Tasks. Schema in `notion-template.md`. The master copy lives in Noettic's Notion workspace and is duplicated into the client's workspace at install.
+1. **Notion template.** Six linked databases: Contacts, Touches, Artworks, Consignments, Exhibitions, Tasks. Schema in `notion-template.md`. The master copy is the private page "Second Unit: Gallery Kit (template)" in the Fabrik Labs Notion workspace (https://app.notion.com/p/40236ad484df816f9167ca58e079cd97). Duplicate it into the client's workspace at install.
 2. **Getting Started interview.** `skills/getting-started/SKILL.md`. Run once per client. Writes the gallery's rules, voice, and preferences into the bot's memory.
 3. **Bots.** One skill folder per job. Starting set: Inquiry Desk, Collector Follow-up. Consignment Tracker next.
 4. **Routines.** `routines.md`. The schedules each bot runs on, set during install.
