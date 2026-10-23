@@ -24,27 +24,21 @@ Owner-led businesses where the owner is still doing the follow-up themselves. Cr
 
 ## Start with one job.
 
-Each job is one agent, installed and trained on your business. Every one starts from a public template in the Grok Bot marketplace, then gets tuned to your voice, your rules, and your tools.
+Each job is one agent, built for your kind of business and then trained on yours: your voice, your rules, and your tools.
 
 ### Call Follow-Ups.
 
 Turns every recorded call into a follow-up email in your voice, a next-steps note, and the CRM update, within about 30 minutes of the call ending. Works with Gong, Granola, Gmail, and your CRM. Nothing sends without your yes.
 
-Starts from the Call Follow-Ups template.
-
 ### Customer Proof.
 
 Turns your call notes and transcripts into case studies, testimonials, and proof points you can drop into proposals. Quotes stay word for word. Nothing publishes without the customer's approval and yours. You get a roundup every week and a refresh every month.
-
-Starts from the Customer Proof Desk template.
 
 ### Pipeline Health.
 
 Scans your pipeline every Monday for stale next steps, deals at risk, and CRM gaps, then drafts the updates to fix them. You get one report and a short list of changes to approve.
 
-Starts from the Pipeline Pulse template.
-
-Want a job that isn't on this list? Ask. The marketplace has more than twenty sales and marketing templates, and we'll tell you plainly if one fits your bottleneck.
+Want a job that isn't on this list? Ask. We'll tell you plainly whether it's one an agent can do well.
 
 ---
 
@@ -52,8 +46,8 @@ Want a job that isn't on this list? Ask. The marketplace has more than twenty sa
 
 1. **Assessment.** A 45-minute call to find the one bottleneck worth fixing first and match it to a job.
 2. **Your account.** You sign up for Grok Bot on your own login and your own billing. We never hold your passwords, and the agents stay yours if we ever part ways.
-3. **Install together.** A 60 to 90 minute screen share. You import the template and connect your email, CRM, and Slack from your side. We guide.
-4. **Getting Started interview.** The agent interviews you: who you sell to, what you sell, what proof you have, how you write, and what it's allowed to do without asking. This interview is ours. It's what turns a public template into your agent.
+3. **Install together.** A 60 to 90 minute screen share. We install the agent in your account, and you connect your email, CRM, and Slack from your side.
+4. **Getting Started interview.** The agent interviews you: who you sell to, what you sell, what proof you have, how you write, and what it's allowed to do without asking. This interview is ours. It's what makes the agent yours.
 5. **Switch on the routines.** You pick the times. Follow-ups within 30 minutes of a call. The pipeline report Monday at 8 a.m. The proof roundup on Fridays.
 6. **Two weeks of tuning.** We review the drafts with you, correct the agent, and tighten its rules until most drafts go out with no edits.
 7. **Monthly check-in.** A results recap, any tuning you need, and the next job when you're ready for it.
@@ -111,7 +105,7 @@ Take the operations to agents. Keep the craft human.
 - **Pricing is a proposal.** Built so that three jobs ($1,500 a month) sit clearly under the Starter tier ($5,000 a month) and feed it. The bundle math checks: three jobs bought separately would be $5,500 setup and $1,750 a month, so the bundle saves $500 and $250 a month. Rough labor: about 10 hours for the first job, about 5 for each added job, about 2 hours a month per job after that.
 - **The $250 assessment conflicts with the free 30-minute discovery call on the current landing page.** I used the product ladder's paid-session rung and credited it to setup. Decide which one the site offers, or offer both with the paid one for Second Unit only.
 - **Minimum term mirrors the landing page:** 90 days, then month to month with 30 days' notice.
-- **The three jobs are the agency and professional-services set.** None of them does cold outreach, which keeps law firms clean on solicitation rules. Pipeline Health uses the Pipeline Pulse template, which I verified in the Sales category. Corey's Lead Pipeline Desk I did not verify.
+- **The three jobs are the agency and professional-services set.** None of them does cold outreach, which keeps law firms clean on solicitation rules. The page no longer mentions marketplace templates. Internally, the starting points are Call Follow-Ups, Customer Proof Desk, and Pipeline Pulse, all verified in the Sales category, until we build our own.
 - **Positioning:** no "don't hire the rep" angle anywhere. "One job each" does the scope-setting.
 - **Medical is excluded on the page** until xAI offers a business associate agreement. I found none in their docs.
 
@@ -120,7 +114,6 @@ Take the operations to agents. Keep the craft human.
 - "Within about 30 minutes" comes from the Call Follow-Ups template's routine, which watches for new calls every 30 minutes on weekdays.
 - "Running within a week" is Corey's claim, not ours yet. Our own two-week self-test will tell us the real number.
 - "Start at $30 a month per person" is the X Subscription Premium price as of October 12, 2026. Check it the day before publishing.
-- "More than twenty sales and marketing templates" is from the Sales category alone, counted on October 23, 2026.
 
 **Doesn't exist yet and must before the first sale.**
 
