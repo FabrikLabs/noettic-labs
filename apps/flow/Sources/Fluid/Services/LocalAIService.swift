@@ -105,12 +105,14 @@ final class LocalAIService: ObservableObject {
         engine.isLocal && OllamaProtocol.isInstalled(engine.model, in: self.installedModels)
     }
 
-    /// The local model to retry with when a cloud cleanup fails; the last local model turned on.
+    /// The local model to retry with when a cloud cleanup fails: the last local model turned on,
+    /// else the best local engine already installed in Ollama (Balanced before Fast).
     var fallbackLocalModel: String? {
         let stored = UserDefaults.standard.string(forKey: LocalAIDefaults.fallbackModelDefaultsKey)?
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let stored, !stored.isEmpty else { return nil }
-        return stored
+        if let stored, !stored.isEmpty { return stored }
+        let preferred: [LocalAICleanupEngine] = [.balancedLocal, .fastLocal]
+        return preferred.first { self.isInstalled($0) }?.model
     }
 
     // MARK: - Detection
