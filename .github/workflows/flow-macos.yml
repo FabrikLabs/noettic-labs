@@ -92,7 +92,12 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            build 2>&1 | tee build/xcodebuild.log | xcbeautify --quiet
+            build 2>&1 | tee build/xcodebuild.log | xcbeautify --quiet || {
+              echo "::group::Compiler errors (from xcodebuild.log)"
+              grep -E "(error|fatal error): " build/xcodebuild.log | sort -u | head -120
+              echo "::endgroup::"
+              exit 1
+            }
           test -d "build/DerivedData/Build/Products/Release/$APP_NAME.app"
 
       - name: Ad-hoc sign

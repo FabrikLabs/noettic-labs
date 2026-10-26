@@ -1,13 +1,8 @@
 import Combine
 import Foundation
 
-/// Ollama on this Mac as the dictation cleanup engine: finds it, downloads the recommended model,
-/// configures it as the verified provider in one step, and keeps the model resident so cleanup
-/// never waits on a cold load.
-@MainActor
-final class LocalAIService: ObservableObject {
-    static let shared = LocalAIService()
-
+/// Constants for the local cleanup engine. Nonisolated so background work can read them.
+enum LocalAIDefaults {
     static let providerID = "ollama"
     static let recommendedModel = "llama3.2:3b"
     static let recommendedModelDisplayName = "Llama 3.2 (3B)"
@@ -16,17 +11,42 @@ final class LocalAIService: ObservableObject {
     static let downloadPage = "https://ollama.com/download/mac"
     static let keepAlive = "12h"
     static let keepWarmInterval: Duration = .seconds(240)
+}
 
-    enum Phase: Equatable {
-        case checking
-        case serverMissing
-        case modelMissing
-        case pulling
-        case ready
-        case failed(String)
+enum LocalAIPhase: Equatable {
+    case checking
+    case serverMissing
+    case modelMissing
+    case pulling
+    case ready
+    case failed(String)
+}
+
+enum LocalAIError: LocalizedError {
+    case pullRejected
+    case pullFailed(String)
+    case pullIncomplete
+
+    var errorDescription: String? {
+        switch self {
+        case .pullRejected:
+            return "Ollama refused the download request. Make sure the Ollama app is running, then try again."
+        case let .pullFailed(message):
+            return "Ollama could not download the model: \(message)"
+        case .pullIncomplete:
+            return "The download stopped before it finished. Check your connection and try again."
+        }
     }
+}
 
-    @Published private(set) var phase: Phase = .checking
+/// Ollama on this Mac as the dictation cleanup engine: finds it, downloads the recommended model,
+/// configures it as the verified provider in one step, and keeps the model resident so cleanup
+/// never waits on a cold load.
+@MainActor
+final class LocalAIService: ObservableObject {
+    static let shared = LocalAIService()
+
+    @Published private(set) var phase: LocalAIPhase = .checking
     @Published private(set) var pullFraction: Double?
     @Published private(set) var pullStatus: String?
     @Published private(set) var installedModels: [String] = []
@@ -47,7 +67,7 @@ final class LocalAIService: ObservableObject {
     /// True when dictation cleanup already routes through a verified Ollama setup.
     var isConfiguredAsDictationProvider: Bool {
         let route = DictationProviderRoute.resolveDictationDefault(settings: self.settings)
-        guard route.providerID == Self.providerID, !route.model.isEmpty else { return false }
+        guard route.providerID == LocalAIDefaults.providerID, !route.model.isEmpty else { return false }
         return DictationAIPostProcessingGate.isConfigured()
     }
 
@@ -57,7 +77,7 @@ final class LocalAIService: ObservableObject {
     }
 
     var modelInstalled: Bool {
-        OllamaProtocol.isInstalled(Self.recommendedModel, in: self.installedModels)
+        OllamaProtocol.isInstalled(LocalAIDefaults.recommendedModel, in: self.installedModels)
     }
 
     // MARK: - Detection
@@ -72,7 +92,7 @@ final class LocalAIService: ObservableObject {
             switch result {
             case let .success(models):
                 self.installedModels = models
-                self.phase = OllamaProtocol.isInstalled(Self.recommendedModel, in: models) ? .ready : .modelMissing
+                self.phase = OllamaProtocol.isInstalled(LocalAIDefaults.recommendedModel, in: models) ? .ready : .modelMissing
             case .failure:
                 self.installedModels = []
                 self.phase = .serverMissing
@@ -103,7 +123,7 @@ final class LocalAIService: ObservableObject {
     }
 
     private nonisolated static func fetchInstalledModels() async -> Result<[String], Error> {
-        guard let url = URL(string: "\(self.host)/api/tags") else { return .failure(URLError(.badURL)) }
+        guard let url = URL(string: "\(LocalAIDefaults.host)/api/tags") else { return .failure(URLError(.badURL)) }
         var request = URLRequest(url: url, timeoutInterval: 3)
         request.httpMethod = "GET"
         do {
@@ -129,7 +149,7 @@ final class LocalAIService: ObservableObject {
         self.pullTask = Task { [weak self] in
             guard let self else { return }
             do {
-                try await self.streamPull(model: Self.recommendedModel)
+                try await self.streamPull(model: LocalAIDefaults.recommendedModel)
                 guard !Task.isCancelled else { return }
                 self.pullTask = nil
                 self.pullStatus = nil
@@ -154,7 +174,7 @@ final class LocalAIService: ObservableObject {
     }
 
     private func streamPull(model: String) async throws {
-        guard let url = URL(string: "\(Self.host)/api/pull") else { throw URLError(.badURL) }
+        guard let url = URL(string: "\(LocalAIDefaults.host)/api/pull") else { throw URLError(.badURL) }
         var request = URLRequest(url: url, timeoutInterval: 60 * 60)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -181,9 +201,9 @@ final class LocalAIService: ObservableObject {
     /// Makes Ollama with the recommended model the verified dictation cleanup provider and turns
     /// cleanup on. Mirrors what verifying a provider in AI Providers would record.
     @discardableResult
-    func configureAsDictationProvider(model: String = LocalAIService.recommendedModel) -> Bool {
-        let providerKey = DictationAIPostProcessingGate.providerKey(for: Self.providerID)
-        let baseURL = ModelRepository.shared.defaultBaseURL(for: Self.providerID)
+    func configureAsDictationProvider(model: String = LocalAIDefaults.recommendedModel) -> Bool {
+        let providerKey = DictationAIPostProcessingGate.providerKey(for: LocalAIDefaults.providerID)
+        let baseURL = ModelRepository.shared.defaultBaseURL(for: LocalAIDefaults.providerID)
         guard !providerKey.isEmpty,
               let fingerprint = DictationAIPostProcessingGate.providerFingerprint(baseURL: baseURL, apiKey: "")
         else { return false }
@@ -202,11 +222,11 @@ final class LocalAIService: ObservableObject {
         fingerprints[providerKey] = fingerprint
         self.settings.verifiedProviderFingerprints = fingerprints
 
-        self.settings.selectedProviderID = Self.providerID
+        self.settings.selectedProviderID = LocalAIDefaults.providerID
         self.settings.enableAIProcessing = true
         self.settings.setDictationPromptSelection(.default)
         self.settings.onboardingAISkipped = false
-        DebugLogger.shared.info("Local AI configured: provider=\(Self.providerID) model=\(model)", source: "LocalAIService")
+        DebugLogger.shared.info("Local AI configured: provider=\(LocalAIDefaults.providerID) model=\(model)", source: "LocalAIService")
 
         self.startKeepWarm()
         Task.detached(priority: .utility) { await Self.warm(model: model) }
@@ -218,7 +238,7 @@ final class LocalAIService: ObservableObject {
     /// The Ollama model dictation currently routes to, if any.
     func activeModel() -> String? {
         let route = DictationProviderRoute.resolveDictationDefault(settings: self.settings)
-        guard route.providerID == Self.providerID else { return nil }
+        guard route.providerID == LocalAIDefaults.providerID else { return nil }
         let model = route.model.trimmingCharacters(in: .whitespacesAndNewlines)
         return model.isEmpty ? nil : model
     }
@@ -232,7 +252,7 @@ final class LocalAIService: ObservableObject {
                 if let model = self?.activeModel() {
                     await Self.warm(model: model)
                 }
-                try? await Task.sleep(for: Self.keepWarmInterval)
+                try? await Task.sleep(for: LocalAIDefaults.keepWarmInterval)
             }
         }
     }
@@ -244,28 +264,11 @@ final class LocalAIService: ObservableObject {
     }
 
     nonisolated static func warm(model: String) async {
-        guard let url = URL(string: "\(self.host)/api/generate") else { return }
+        guard let url = URL(string: "\(LocalAIDefaults.host)/api/generate") else { return }
         var request = URLRequest(url: url, timeoutInterval: 45)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = OllamaProtocol.keepAliveRequestBody(model: model, keepAlive: self.keepAlive)
+        request.httpBody = OllamaProtocol.keepAliveRequestBody(model: model, keepAlive: LocalAIDefaults.keepAlive)
         _ = try? await URLSession.shared.data(for: request)
-    }
-
-    enum LocalAIError: LocalizedError {
-        case pullRejected
-        case pullFailed(String)
-        case pullIncomplete
-
-        var errorDescription: String? {
-            switch self {
-            case .pullRejected:
-                return "Ollama refused the download request. Make sure the Ollama app is running, then try again."
-            case let .pullFailed(message):
-                return "Ollama could not download the model: \(message)"
-            case .pullIncomplete:
-                return "The download stopped before it finished. Check your connection and try again."
-            }
-        }
     }
 }

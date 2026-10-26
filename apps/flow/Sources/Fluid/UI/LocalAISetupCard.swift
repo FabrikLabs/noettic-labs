@@ -50,7 +50,7 @@ struct LocalAISetupCard: View {
         case .checking: return "Looking for Ollama…"
         case .serverMissing: return "Turn on AI cleanup"
         case .modelMissing: return "Download the cleanup model"
-        case .pulling: return "Downloading \(LocalAIService.recommendedModelDisplayName)…"
+        case .pulling: return "Downloading \(LocalAIDefaults.recommendedModelDisplayName)…"
         case .ready: return "Local AI is ready"
         case .failed: return "Local AI setup hit a snag"
         }
@@ -63,11 +63,11 @@ struct LocalAISetupCard: View {
         case .serverMissing:
             return "Install Ollama, a free app that runs the cleanup model on your Mac, and open it once. This card updates by itself."
         case .modelMissing:
-            return "\(LocalAIService.recommendedModelDisplayName), \(LocalAIService.recommendedModelSizeText). Removes filler words and tidies punctuation without sending anything off your Mac."
+            return "\(LocalAIDefaults.recommendedModelDisplayName), \(LocalAIDefaults.recommendedModelSizeText). Removes filler words and tidies punctuation without sending anything off your Mac."
         case .pulling:
             return "You can keep dictating meanwhile; cleanup switches on when the download finishes."
         case .ready:
-            return "Use \(LocalAIService.recommendedModelDisplayName) to clean up every dictation, entirely on this Mac."
+            return "Use \(LocalAIDefaults.recommendedModelDisplayName) to clean up every dictation, entirely on this Mac."
         case let .failed(message):
             return message
         }
@@ -105,7 +105,7 @@ struct LocalAISetupCard: View {
     }
 
     private func openDownloadPage() {
-        guard let url = URL(string: LocalAIService.downloadPage) else { return }
+        guard let url = URL(string: LocalAIDefaults.downloadPage) else { return }
         NSWorkspace.shared.open(url)
     }
 }
