@@ -324,26 +324,33 @@ final class LocalAIService: ObservableObject {
     }
 
     /// Ollama unloads a model five minutes after its last request. Renew well inside that window
-    /// so the first dictation after a quiet spell is as fast as the tenth.
+    /// so the first dictation after a quiet spell is as fast as the tenth. This only loads the
+    /// model; it never evaluates a prompt, so it cannot sit in front of a real request.
     func startKeepWarm() {
         guard self.keepWarmTask == nil else { return }
         self.keepWarmTask = Task { [weak self] in
             while !Task.isCancelled {
                 if let self, let model = self.activeModel() {
-                    await Self.warm(model: model, systemPrompt: self.lastSystemPrompt)
+                    await Self.warm(model: model, systemPrompt: nil)
                 }
                 try? await Task.sleep(for: LocalAIDefaults.keepWarmInterval)
             }
         }
     }
 
-    /// Called when a dictation shortcut is pressed. Loading the model and evaluating the cleanup
-    /// prompt overlap with the user speaking, so the stop only has to process the new words.
+    /// Called when a dictation shortcut is pressed: makes sure the model is loaded while the user
+    /// speaks. Ollama serves one request at a time per model, so nothing heavier runs here.
     func prewarmIfActive(systemPrompt: String?) {
         if let systemPrompt, !systemPrompt.isEmpty { self.lastSystemPrompt = systemPrompt }
         guard let model = self.activeModel() else { return }
-        let prompt = self.lastSystemPrompt
-        Task.detached(priority: .userInitiated) { await Self.warm(model: model, systemPrompt: prompt) }
+        Task.detached(priority: .userInitiated) { await Self.warm(model: model, systemPrompt: nil) }
+    }
+
+    /// Called once a dictation's cleanup has finished: the model is idle, so evaluating the cleanup
+    /// prompt now leaves it in Ollama's prompt cache for the next dictation.
+    func primeAfterCompletion() {
+        guard let model = self.activeModel(), let prompt = self.lastSystemPrompt, !prompt.isEmpty else { return }
+        Task.detached(priority: .utility) { await Self.warm(model: model, systemPrompt: prompt) }
     }
 
     nonisolated static func warm(model: String, systemPrompt: String?) async {

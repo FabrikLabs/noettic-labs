@@ -34,9 +34,10 @@ dictation 1 points at the prompt not being reused between requests.
 - Ready chime on key press.
 - Cleanup engine choice on the Dashboard: Fast (`llama3.2:1b`), Balanced
   (`llama3.2:3b`), Fastest (Groq `llama-3.1-8b-instant`, cloud).
-- The cleanup system prompt is evaluated on Ollama when the shortcut is pressed
-  and renewed by the keep-warm timer, so a request only has to process the new
-  transcript tokens.
+- The cleanup system prompt is evaluated on Ollama right after each cleanup
+  finishes, while the model is idle, so the next request only has to process the
+  new transcript tokens. (A first version did this on the key press; Ollama serves
+  one request per model at a time, so that could delay the real request.)
 - A failed cloud cleanup retries once on the last local model before falling back
   to the raw transcript.
 

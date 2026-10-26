@@ -3254,6 +3254,8 @@ struct ContentView: View {
                 aiTokensPerSecond = result.tokensPerSecond
                 streamPreview.flush()
                 self.appBench("ai_preview_flushed id=\(pipelineID)")
+                // The local model is idle now; cache the cleanup prompt for the next dictation.
+                LocalAIService.shared.primeAfterCompletion()
             } catch {
                 refiningStatusTask.cancel()
                 self.appBench("ai_process_fail id=\(pipelineID)")
