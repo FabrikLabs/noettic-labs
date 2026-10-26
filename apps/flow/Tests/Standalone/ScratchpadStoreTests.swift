@@ -25,13 +25,13 @@ struct ScratchpadStoreTests {
         check(store.hasUnsavedChanges, "An edit is pending until the debounce fires")
         try await Task.sleep(for: .milliseconds(200))
         check(!store.hasUnsavedChanges && store.lastSavedAt != nil && store.saveError == nil, "Autosave wrote the file")
-        check(String(decoding: try Data(contentsOf: fileURL), as: UTF8.self) == "First thought", "File holds the note")
+        check(String(data: try Data(contentsOf: fileURL), encoding: .utf8) == "First thought", "File holds the note")
 
         // Rapid edits coalesce into one write of the latest text.
         store.text = "First thought, "
         store.text = "First thought, second"
         store.saveNow()
-        check(String(decoding: try Data(contentsOf: fileURL), as: UTF8.self) == "First thought, second", "saveNow flushes the latest text")
+        check(String(data: try Data(contentsOf: fileURL), encoding: .utf8) == "First thought, second", "saveNow flushes the latest text")
 
         // Appending separates entries and ignores blank additions.
         store.append("   ")
@@ -46,7 +46,7 @@ struct ScratchpadStoreTests {
         check(reloaded.text == store.text, "Reload reads the saved note")
         reloaded.clear()
         reloaded.saveNow()
-        check(String(decoding: try Data(contentsOf: fileURL), as: UTF8.self).isEmpty, "Clear persists an empty note")
+        check(String(data: try Data(contentsOf: fileURL), encoding: .utf8) == "", "Clear persists an empty note")
 
         // Write failures surface instead of crashing.
         let blocked = ScratchpadStore(fileURL: directory.appendingPathComponent("nested/Scratchpad.md/impossible.md"), saveDelay: .milliseconds(20))

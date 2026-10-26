@@ -3,8 +3,8 @@
 import AppKit
 import Combine
 import CoreAudio
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import SwiftUI
 import XCTest
 

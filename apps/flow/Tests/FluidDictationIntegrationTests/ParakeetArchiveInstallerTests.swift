@@ -1,5 +1,5 @@
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import XCTest
 
 /// Byte-identical publisher/iPhone archives; Mac must return the same verdict for every case.

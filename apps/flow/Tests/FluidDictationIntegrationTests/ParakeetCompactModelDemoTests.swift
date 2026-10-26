@@ -1,7 +1,7 @@
 import AppKit
 import AVFoundation
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import SwiftUI
 import XCTest
 

@@ -1,5 +1,5 @@
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import XCTest
 
 /// Milestone A of `MEETING_TRANSCRIPTION_IMPLEMENTATION_PLAN.md`: the backend contract, the

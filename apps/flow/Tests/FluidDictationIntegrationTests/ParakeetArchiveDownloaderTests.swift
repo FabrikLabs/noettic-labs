@@ -1,7 +1,7 @@
 import CryptoKit
 import Darwin
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import XCTest
 
 final nonisolated class ParakeetArchiveDownloaderTests: XCTestCase {

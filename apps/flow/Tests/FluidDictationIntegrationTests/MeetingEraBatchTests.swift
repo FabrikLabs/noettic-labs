@@ -1,5 +1,5 @@
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import XCTest
 
 /// Batch era-awareness: `captureEras[].startSeconds` is raw PTS; `microphoneEras(for:origin:)`'s domain conversion to origin-relative seconds is pinned here.

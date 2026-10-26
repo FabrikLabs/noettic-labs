@@ -1,7 +1,7 @@
 import Combine
 import CoreAudio
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import XCTest
 
 final class DirectAudioReliabilityTests: XCTestCase {

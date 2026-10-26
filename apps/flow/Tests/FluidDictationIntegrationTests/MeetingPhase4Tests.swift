@@ -1,7 +1,7 @@
 import AVFoundation
 import CoreMedia
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import XCTest
 
 /// Phase 4 — VPIO attribution. See MIC_CAPTURE_MIGRATION_PLAN.md §5/§9.

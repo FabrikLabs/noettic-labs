@@ -43,8 +43,8 @@ final class ScratchpadStore: ObservableObject {
     }
 
     private static func load(from url: URL) -> String {
-        guard let data = try? Data(contentsOf: url) else { return "" }
-        return String(decoding: data, as: UTF8.self)
+        guard let data = try? Data(contentsOf: url), let text = String(data: data, encoding: .utf8) else { return "" }
+        return text
     }
 
     var isEmpty: Bool {

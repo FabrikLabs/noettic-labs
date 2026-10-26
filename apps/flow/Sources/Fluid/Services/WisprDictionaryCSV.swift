@@ -31,6 +31,8 @@ enum WisprDictionaryCSV {
     enum ParseError: LocalizedError, Equatable {
         case unreadableText
         case noEntries(skippedRows: Int)
+        /// A row whose quoted field never closes. Only `splitFields` throws it; `parse` skips the row.
+        case unterminatedQuote
 
         var errorDescription: String? {
             switch self {
@@ -41,6 +43,8 @@ enum WisprDictionaryCSV {
                     return "No dictionary items found in file. \(skippedRows) row(s) were skipped because they were not in Wispr Flow's CSV format."
                 }
                 return "No dictionary items found in file."
+            case .unterminatedQuote:
+                return "A quoted field is missing its closing quote."
             }
         }
     }
@@ -66,7 +70,7 @@ enum WisprDictionaryCSV {
             let line = String(rawLine)
             if line.trimmingCharacters(in: .whitespaces).isEmpty { continue }
 
-            guard let fields = self.splitFields(line) else {
+            guard let fields = try? self.splitFields(line) else {
                 result.skippedRows += 1
                 continue
             }
@@ -109,8 +113,8 @@ enum WisprDictionaryCSV {
 
     // MARK: - CSV mechanics
 
-    /// Splits one line into raw fields. Returns nil for an unterminated quoted field.
-    static func splitFields(_ line: String) -> [String]? {
+    /// Splits one line into raw fields. Throws `ParseError.unterminatedQuote` when a quoted field never closes.
+    static func splitFields(_ line: String) throws -> [String] {
         var fields: [String] = []
         var current = ""
         var iterator = line.makeIterator()
@@ -147,7 +151,7 @@ enum WisprDictionaryCSV {
                         current.append(inner)
                     }
                 }
-                guard closed else { return nil }
+                guard closed else { throw ParseError.unterminatedQuote }
                 // Anything between the closing quote and the next comma is dropped.
                 while let trailing = pending, trailing != "," {
                     _ = advance()

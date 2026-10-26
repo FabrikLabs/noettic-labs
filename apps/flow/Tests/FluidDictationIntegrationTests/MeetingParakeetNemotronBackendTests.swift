@@ -1,6 +1,6 @@
 import AVFoundation
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import XCTest
 
 /// Milestone E of `MEETING_TRANSCRIPTION_IMPLEMENTATION_PLAN.md`: the composite

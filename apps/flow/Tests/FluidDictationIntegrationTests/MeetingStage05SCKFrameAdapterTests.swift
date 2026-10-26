@@ -3,8 +3,8 @@
 import CoreAudio
 import CoreMedia
 import Darwin
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import XCTest
 
 /// Synthetic CMSampleBuffer factory shared by the Stage 0.5 adapter and timing-record

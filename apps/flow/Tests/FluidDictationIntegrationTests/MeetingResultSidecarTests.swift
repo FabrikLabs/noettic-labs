@@ -1,6 +1,6 @@
 import CryptoKit
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import XCTest
 
 /// Stage C1 of `MEETING_TRANSCRIPTION_IMPLEMENTATION_PLAN.md`: versioned Codable evidence, the

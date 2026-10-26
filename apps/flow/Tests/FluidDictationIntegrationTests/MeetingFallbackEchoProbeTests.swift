@@ -1,5 +1,5 @@
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import XCTest
 
 /// Opt-in probe against a real recorded session, used to decide whether the whole-chunk microphone

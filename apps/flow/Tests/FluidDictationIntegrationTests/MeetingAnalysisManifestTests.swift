@@ -1,7 +1,7 @@
 import AVFoundation
 import CryptoKit
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import XCTest
 
 private nonisolated struct ManifestFixtureObserver: MeetingChunkAudioObserving {

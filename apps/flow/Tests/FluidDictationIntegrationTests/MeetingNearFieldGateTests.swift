@@ -1,5 +1,5 @@
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import XCTest
 
 /// Levels are the ones measured on a real speakerphone session: the user at 0.0287 RMS

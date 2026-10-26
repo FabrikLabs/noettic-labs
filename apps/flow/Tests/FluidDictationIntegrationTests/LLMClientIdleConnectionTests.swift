@@ -1,6 +1,6 @@
-@testable import Noettic_Flow_Debug
 import Foundation
 import Network
+@testable import Noettic_Flow_Debug
 import XCTest
 
 // Regression tests for https://github.com/altic-dev/FluidVoice/issues/1016

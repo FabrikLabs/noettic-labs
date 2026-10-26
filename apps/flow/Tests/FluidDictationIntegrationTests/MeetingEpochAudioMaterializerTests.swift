@@ -1,6 +1,6 @@
 import AVFoundation
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import XCTest
 
 /// Stage E of `MEETING_TRANSCRIPTION_IMPLEMENTATION_PLAN.md` (§3): epoch materialization against

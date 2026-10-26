@@ -1,8 +1,8 @@
 // Existing end-to-end fixture suite is kept together to share its setup and helpers.
 // swiftlint:disable file_length
 import AppKit
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import SwiftUI
 #if arch(arm64)
 import FluidAudio

@@ -1,8 +1,8 @@
 import AVFoundation
 import CoreAudio
 import CoreMedia
-@testable import Noettic_Flow_Debug
 import Foundation
+@testable import Noettic_Flow_Debug
 import os
 import ScreenCaptureKit
 import XCTest
