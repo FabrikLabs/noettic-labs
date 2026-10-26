@@ -203,12 +203,14 @@ enum LocalAICleanupEngine: String, CaseIterable, Identifiable {
     /// The engine a configured provider/model pair corresponds to, if any.
     static func match(providerID: String, model: String) -> LocalAICleanupEngine? {
         let provider = providerID.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        let wanted = OllamaProtocol.canonicalName(model)
         if provider == Self.groqCloud.providerID {
             // Any of the preferred Groq models counts as Fastest, so a setup made before a
-            // model was retired still shows as active while it is repaired.
+            // model was retired still shows as active while it is repaired. Groq names carry
+            // no Ollama-style tag, so compare them plainly.
+            let wanted = model.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
             return self.groqModelPreference.contains { $0.lowercased() == wanted } ? .groqCloud : nil
         }
+        let wanted = OllamaProtocol.canonicalName(model)
         return Self.allCases.first { $0.providerID == provider && OllamaProtocol.canonicalName($0.model) == wanted }
     }
 }

@@ -1347,6 +1347,14 @@ final class AIEnhancementSettingsViewModel: ObservableObject {
         self.selectedModelByProvider[key] = trimmedModel
         self.settings.selectedModelByProvider = self.selectedModelByProvider
 
+        // When the Default cleanup style is pinned to this provider, dictation reads the pinned
+        // model rather than this picker; keep the two in step so the choice takes effect.
+        var defaultConfiguration = self.settings.dictationPromptConfiguration(for: .default)
+        if defaultConfiguration.providerID == providerID, !defaultConfiguration.modelName.isEmpty, defaultConfiguration.modelName != trimmedModel {
+            defaultConfiguration.modelName = trimmedModel
+            self.settings.setDictationPromptConfiguration(defaultConfiguration, for: .default)
+        }
+
         if providerID == self.selectedProviderID {
             self.availableModels = self.models(for: providerID)
             self.selectedModel = trimmedModel
