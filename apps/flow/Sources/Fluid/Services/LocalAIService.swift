@@ -85,6 +85,22 @@ final class LocalAIService: ObservableObject {
         !DictationAIPostProcessingGate.isConfigured()
     }
 
+    /// "Groq · openai/gpt-oss-120b" style description of whatever dictation routes to now.
+    var activeRouteDescription: String? {
+        guard DictationAIPostProcessingGate.isConfigured() else { return nil }
+        let route = DictationProviderRoute.resolveDictationDefault(settings: self.settings)
+        guard !route.providerID.isEmpty else { return nil }
+        let provider = ModelRepository.shared.displayName(for: route.providerID)
+        return route.model.isEmpty ? provider : "\(provider) · \(route.model)"
+    }
+
+    /// A Groq key already stored from AI Providers or an earlier setup, if any.
+    var storedGroqKey: String? {
+        let key = self.settings.providerAPIKeys[LocalAIDefaults.groqProviderID]?.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let key, !key.isEmpty else { return nil }
+        return key
+    }
+
     func isInstalled(_ engine: LocalAICleanupEngine) -> Bool {
         engine.isLocal && OllamaProtocol.isInstalled(engine.model, in: self.installedModels)
     }
@@ -307,6 +323,12 @@ final class LocalAIService: ObservableObject {
         self.settings.verifiedProviderFingerprints = fingerprints
 
         self.settings.selectedProviderID = providerID
+        // The Default cleanup style may be pinned to an older provider/model pair (AI Providers
+        // writes one); point it at this engine so routing follows the card.
+        var configuration = self.settings.dictationPromptConfiguration(for: .default)
+        configuration.providerID = providerID
+        configuration.modelName = model
+        self.settings.setDictationPromptConfiguration(configuration, for: .default)
         self.settings.enableAIProcessing = true
         self.settings.setDictationPromptSelection(.default)
         self.settings.onboardingAISkipped = false

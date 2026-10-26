@@ -58,8 +58,8 @@ struct LocalAISetupCard: View {
         if let engine = self.service.activeEngine {
             return "On: \(engine.title). Every dictation of four words or more is cleaned up by \(engine.isLocal ? "Llama on this Mac" : "Groq") before it is typed."
         }
-        if !self.service.shouldOfferSetup {
-            return "On, using the provider chosen under AI Providers."
+        if let route = self.service.activeRouteDescription {
+            return "On, using \(route) from AI Providers. Pick an engine below to switch."
         }
         return "Off. Pick an engine to remove filler words, apply corrections and fix punctuation as you dictate."
     }
@@ -150,6 +150,20 @@ struct LocalAISetupCard: View {
             Button("Active") {}
                 .fluidGlassAction(quiet: true)
                 .disabled(true)
+        } else if let storedKey = self.service.storedGroqKey, !self.showsGroqKeyField {
+            // A key is already on file (from AI Providers or an earlier setup): one click switches.
+            Button {
+                Task { await self.service.activateGroq(apiKey: storedKey) }
+            } label: {
+                HStack(spacing: 6) {
+                    if self.service.isVerifyingGroq { ProgressView().controlSize(.small) }
+                    Text(self.service.isVerifyingGroq ? "Checking…" : "Use")
+                }
+            }
+            .fluidGlassAction(prominent: true)
+            .disabled(self.service.isVerifyingGroq)
+            Button("New key") { self.showsGroqKeyField = true }
+                .fluidGlassAction(quiet: true)
         } else {
             Button(self.showsGroqKeyField ? "Hide" : "Set up") { self.showsGroqKeyField.toggle() }
                 .fluidGlassAction(prominent: !self.showsGroqKeyField, quiet: self.showsGroqKeyField)
