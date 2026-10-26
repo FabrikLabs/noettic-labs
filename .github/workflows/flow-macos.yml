@@ -75,25 +75,36 @@ jobs:
           set -o pipefail
           mkdir -p build
           command -v xcbeautify >/dev/null 2>&1 || brew install xcbeautify
-          xcodebuild \
-            -project "$PROJECT" \
-            -scheme "$SCHEME" \
-            -configuration Release \
-            -destination 'platform=macOS,arch=arm64' \
-            -derivedDataPath build/DerivedData \
-            ONLY_ACTIVE_ARCH=YES \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            build 2>&1 | tee build/xcodebuild.log | xcbeautify --quiet || {
-              echo "::group::Errors (from xcodebuild.log)"
-              grep -n -i -E "error|failed" build/xcodebuild.log | grep -v -i "warning" | tail -n 80 || true
+          build_once() {
+            xcodebuild \
+              -project "$PROJECT" \
+              -scheme "$SCHEME" \
+              -configuration Release \
+              -destination 'platform=macOS,arch=arm64' \
+              -derivedDataPath build/DerivedData \
+              ONLY_ACTIVE_ARCH=YES \
+              CODE_SIGN_IDENTITY="" \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGNING_ALLOWED=NO \
+              build 2>&1 | tee "build/xcodebuild-$1.log" | xcbeautify --quiet
+          }
+          # Xcode's asset catalog compiler (ibtoold) crashes intermittently on hosted
+          # runners. A second, incremental attempt recovers from that; real compile
+          # errors fail both attempts and are printed below.
+          if ! build_once 1; then
+            if grep -q "CompileAssetCatalog" "build/xcodebuild-1.log" || grep -q "ibtoold" "build/xcodebuild-1.log"; then
+              echo "::warning::Asset catalog compiler failed; retrying the build once."
+            fi
+            if ! build_once 2; then
+              echo "::group::Errors (from xcodebuild-2.log)"
+              grep -n -i -E "error|failed" build/xcodebuild-2.log | grep -v -i "warning" | tail -n 80 || true
               echo "::endgroup::"
-              echo "::group::Last 60 lines of xcodebuild.log"
-              tail -n 60 build/xcodebuild.log || true
+              echo "::group::Last 60 lines of xcodebuild-2.log"
+              tail -n 60 build/xcodebuild-2.log || true
               echo "::endgroup::"
               exit 1
-            }
+            fi
+          fi
           test -d "build/DerivedData/Build/Products/Release/$APP_NAME.app"
 
       - name: Ad-hoc sign
@@ -149,7 +160,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xcodebuild-log
-          path: apps/flow/build/xcodebuild.log
+          path: apps/flow/build/xcodebuild-*.log
           if-no-files-found: ignore
           retention-days: 7
 
