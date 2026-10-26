@@ -63,7 +63,6 @@ struct DashboardView: View {
     @State private var statsOwner = UUID()
     @State private var greeting = "Welcome back."
     @State private var statisticsHovered = false
-    @State private var localAIDismissed = false
     @FocusState private var statisticsFocused: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -247,14 +246,12 @@ struct DashboardView: View {
         }
     }
 
-    /// Offered until some cleanup provider works; hides itself once dictation routes through one.
-    @ViewBuilder private var localAISetup: some View {
-        if !self.localAIDismissed, LocalAIService.shared.shouldOfferSetup {
-            VStack(alignment: .leading, spacing: 14) {
-                Text("AI cleanup").font(self.theme.typography.sectionTitle)
-                LocalAISetupCard(onDismiss: { self.localAIDismissed = true })
-                    .disabled(self.busy)
-            }
+    /// The cleanup engine picker; also where a missing Ollama or model gets installed.
+    private var localAISetup: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("AI cleanup").font(self.theme.typography.sectionTitle)
+            LocalAISetupCard()
+                .disabled(self.busy)
         }
     }
 

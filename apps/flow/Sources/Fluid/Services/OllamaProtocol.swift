@@ -62,6 +62,18 @@ enum OllamaProtocol {
         self.json(["model": model, "keep_alive": keepAlive, "stream": false])
     }
 
+    /// Runs the cleanup system prompt through the model with a one-token reply so Ollama's prompt
+    /// cache already holds it when the real request arrives; only the transcript is new then.
+    static func primeRequestBody(model: String, systemPrompt: String, keepAlive: String) -> Data {
+        self.json([
+            "model": model,
+            "messages": [["role": "system", "content": systemPrompt]],
+            "keep_alive": keepAlive,
+            "stream": false,
+            "options": ["num_predict": 1],
+        ])
+    }
+
     /// A readable download status such as "pulling 1.2 GB of 2.0 GB".
     static func progressText(for event: PullEvent) -> String {
         guard let completed = event.completed, let total = event.total, total > 0 else {
@@ -113,5 +125,62 @@ enum DictationLatencyPolicy {
     static func timeout(forInputCharacters count: Int) -> TimeInterval {
         let scaled = Double(max(0, count)) / self.charactersPerTimeoutSecond
         return min(self.maximumTimeoutSeconds, max(self.minimumTimeoutSeconds, scaled))
+    }
+}
+
+/// The cleanup engines the Dashboard card offers, from slowest-and-private to fastest-and-cloud.
+enum LocalAICleanupEngine: String, CaseIterable, Identifiable {
+    case fastLocal
+    case balancedLocal
+    case groqCloud
+
+    var id: String { self.rawValue }
+
+    var providerID: String {
+        switch self {
+        case .fastLocal, .balancedLocal: return "ollama"
+        case .groqCloud: return "groq"
+        }
+    }
+
+    var model: String {
+        switch self {
+        case .fastLocal: return "llama3.2:1b"
+        case .balancedLocal: return "llama3.2:3b"
+        case .groqCloud: return "llama-3.1-8b-instant"
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .fastLocal: return "Fast"
+        case .balancedLocal: return "Balanced"
+        case .groqCloud: return "Fastest"
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .fastLocal: return "Llama 3.2 1B on this Mac. About a second per sentence, nothing leaves your Mac."
+        case .balancedLocal: return "Llama 3.2 3B on this Mac. Better wording, two to four seconds per sentence on an M1."
+        case .groqCloud: return "Llama 3.1 8B on Groq's servers. Under a second, best wording; transcript text is sent to Groq."
+        }
+    }
+
+    var isLocal: Bool { self.providerID == "ollama" }
+
+    var downloadSizeText: String? {
+        switch self {
+        case .fastLocal: return "about 1.3 GB"
+        case .balancedLocal: return "about 2 GB"
+        case .groqCloud: return nil
+        }
+    }
+
+    /// The engine a configured provider/model pair corresponds to, if any.
+    static func match(providerID: String, model: String) -> LocalAICleanupEngine? {
+        let provider = providerID.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let wanted = OllamaProtocol.canonicalName(model)
+        return Self.allCases.first { $0.providerID == provider && OllamaProtocol.canonicalName($0.model) == wanted }
     }
 }

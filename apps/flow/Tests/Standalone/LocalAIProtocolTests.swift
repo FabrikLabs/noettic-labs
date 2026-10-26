@@ -42,6 +42,20 @@ struct LocalAIProtocolTests {
         let warm = try JSONSerialization.jsonObject(with: OllamaProtocol.keepAliveRequestBody(model: "m", keepAlive: "12h")) as? [String: Any]
         check(warm?["keep_alive"] as? String == "12h" && warm?["stream"] as? Bool == false && warm?["prompt"] == nil, "Keep-alive body loads without generating: \(String(describing: warm))")
 
+        // Prompt priming body: system prompt, one token, kept resident.
+        let prime = try JSONSerialization.jsonObject(with: OllamaProtocol.primeRequestBody(model: "m", systemPrompt: "Clean it.", keepAlive: "12h")) as? [String: Any]
+        let primeMessages = prime?["messages"] as? [[String: String]]
+        check(primeMessages?.first?["role"] == "system" && primeMessages?.first?["content"] == "Clean it.", "Prime body carries the system prompt: \(String(describing: prime))")
+        check((prime?["options"] as? [String: Int])?["num_predict"] == 1 && prime?["keep_alive"] as? String == "12h", "Prime body generates one token and keeps the model loaded")
+
+        // Engine catalogue.
+        check(LocalAICleanupEngine.match(providerID: "ollama", model: "llama3.2:3b") == .balancedLocal, "3B maps to Balanced")
+        check(LocalAICleanupEngine.match(providerID: "Ollama", model: "LLAMA3.2:1b") == .fastLocal, "Matching ignores case")
+        check(LocalAICleanupEngine.match(providerID: "groq", model: "llama-3.1-8b-instant") == .groqCloud, "Groq maps to Fastest")
+        check(LocalAICleanupEngine.match(providerID: "openai", model: "gpt-4o-mini") == nil, "Other providers are not card engines")
+        check(LocalAICleanupEngine.match(providerID: "ollama", model: "qwen2.5:3b") == nil, "Other local models are not card engines")
+        check(LocalAICleanupEngine.allCases.filter(\.isLocal).count == 2 && !LocalAICleanupEngine.groqCloud.isLocal, "Two local engines, one cloud")
+
         // Latency policy.
         check(!DictationLatencyPolicy.warrantsAIPass("Yes"), "One word skips cleanup")
         check(!DictationLatencyPolicy.warrantsAIPass("Sounds good, thanks"), "Three words skip cleanup")

@@ -1,29 +1,112 @@
 import AppKit
 import SwiftUI
 
-/// Walks the user from "no cleanup model" to "Ollama running Llama 3.2" in three clicks: get
-/// Ollama, download the model, turn it on. Stays on the Dashboard until cleanup works.
+/// The cleanup engine picker on the Dashboard: two local Llama sizes through Ollama and Groq in
+/// the cloud. Handles the Ollama install nudge, model downloads with progress, and key entry.
 struct LocalAISetupCard: View {
-    var onDismiss: (() -> Void)?
     @ObservedObject private var service = LocalAIService.shared
+    @ObservedObject private var settings = SettingsStore.shared
     @Environment(\.theme) private var theme
+    @State private var groqKey = ""
+    @State private var showsGroqKeyField = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
+            self.header
+            if self.service.phase == .serverMissing {
+                self.ollamaBanner
+            }
+            ForEach(LocalAICleanupEngine.allCases) { engine in
+                Divider().opacity(0.4)
+                self.engineRow(engine)
+            }
+            if let error = self.service.lastError {
+                Label(error, systemImage: "exclamationmark.triangle")
+                    .font(self.theme.typography.caption)
+                    .foregroundStyle(self.theme.palette.warning)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(self.theme.palette.cardBackground, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(self.theme.palette.cardBorder.opacity(0.45), lineWidth: 1))
+        .task { self.service.beginMonitoring() }
+        .onDisappear { self.service.endMonitoring() }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("AI cleanup engines")
+    }
+
+    // MARK: - Header
+
+    private var header: some View {
+        HStack(alignment: .top, spacing: 12) {
+            FluidIconTile(icon: "cpu", tint: self.theme.palette.accent)
+            VStack(alignment: .leading, spacing: 3) {
+                Text("AI cleanup")
+                    .font(self.theme.typography.bodySmallStrong)
+                Text(self.statusText)
+                    .font(self.theme.typography.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+        }
+    }
+
+    private var statusText: String {
+        if let engine = self.service.activeEngine {
+            return "On: \(engine.title). Every dictation of four words or more is cleaned up by \(engine.isLocal ? "Llama on this Mac" : "Groq") before it is typed."
+        }
+        if !self.service.shouldOfferSetup {
+            return "On, using the provider chosen under AI Providers."
+        }
+        return "Off. Pick an engine to remove filler words, apply corrections and fix punctuation as you dictate."
+    }
+
+    private var ollamaBanner: some View {
+        HStack(alignment: .center, spacing: 10) {
+            Text("The local engines need Ollama, a free app that runs the model on your Mac. Install it and open it once; this card updates by itself.")
+                .font(self.theme.typography.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
+            Button("Get Ollama") { self.open(LocalAIDefaults.downloadPage) }
+                .fluidGlassAction()
+                .fixedSize()
+        }
+    }
+
+    // MARK: - Engine rows
+
+    private func engineRow(_ engine: LocalAICleanupEngine) -> some View {
+        let isActive = self.service.activeEngine == engine
+        return VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top, spacing: 12) {
-                FluidIconTile(icon: "cpu", tint: self.theme.palette.accent)
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(self.title)
-                        .font(self.theme.typography.bodySmallStrong)
-                    Text(self.detail)
+                    HStack(spacing: 6) {
+                        Text(engine.title)
+                            .font(self.theme.typography.bodySmallStrong)
+                        if isActive {
+                            Text("Active")
+                                .font(self.theme.typography.captionStrong)
+                                .foregroundStyle(self.theme.palette.accent)
+                        } else if engine.isLocal, self.service.isInstalled(engine) {
+                            Text("Installed")
+                                .font(self.theme.typography.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    Text(engine.detail)
                         .font(self.theme.typography.caption)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: 8)
-                self.actions
+                self.action(for: engine, isActive: isActive)
+                    .fixedSize()
             }
-            if self.service.phase == .pulling {
+            if engine.isLocal, self.service.pullingModel == engine.model {
                 VStack(alignment: .leading, spacing: 4) {
                     ProgressView(value: self.service.pullFraction ?? 0, total: 1)
                         .progressViewStyle(.linear)
@@ -34,78 +117,81 @@ struct LocalAISetupCard: View {
                         .monospacedDigit()
                 }
             }
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .background(self.theme.palette.cardBackground, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(self.theme.palette.cardBorder.opacity(0.45), lineWidth: 1))
-        .task { self.service.beginMonitoring() }
-        .onDisappear { self.service.endMonitoring() }
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel("Local AI cleanup setup. \(self.title). \(self.detail)")
-    }
-
-    private var title: String {
-        switch self.service.phase {
-        case .checking: return "Looking for Ollama…"
-        case .serverMissing: return "Turn on AI cleanup"
-        case .modelMissing: return "Download the cleanup model"
-        case .pulling: return "Downloading \(LocalAIDefaults.recommendedModelDisplayName)…"
-        case .ready: return "Local AI is ready"
-        case .failed: return "Local AI setup hit a snag"
+            if engine == .groqCloud, self.showsGroqKeyField, !isActive {
+                self.groqKeyEntry
+            }
         }
     }
 
-    private var detail: String {
-        switch self.service.phase {
-        case .checking:
-            return "Checking whether Ollama is running on this Mac."
-        case .serverMissing:
-            return "Install Ollama, a free app that runs the cleanup model on your Mac, and open it once. This card updates by itself."
-        case .modelMissing:
-            return "\(LocalAIDefaults.recommendedModelDisplayName), \(LocalAIDefaults.recommendedModelSizeText). Removes filler words and tidies punctuation without sending anything off your Mac."
-        case .pulling:
-            return "You can keep dictating meanwhile; cleanup switches on when the download finishes."
-        case .ready:
-            return "Use \(LocalAIDefaults.recommendedModelDisplayName) to clean up every dictation, entirely on this Mac."
-        case let .failed(message):
-            return message
-        }
-    }
-
-    @ViewBuilder private var actions: some View {
-        HStack(spacing: 8) {
-            switch self.service.phase {
-            case .checking:
-                ProgressView().controlSize(.small)
-            case .serverMissing:
-                Button("Get Ollama") { self.openDownloadPage() }
-                    .fluidGlassAction(prominent: true)
-                Button("Check again") { self.service.refresh() }
-                    .fluidGlassAction(quiet: true)
-            case .modelMissing:
-                Button("Download") { self.service.pullRecommendedModel() }
-                    .fluidGlassAction(prominent: true)
-            case .pulling:
+    @ViewBuilder private func action(for engine: LocalAICleanupEngine, isActive: Bool) -> some View {
+        if engine.isLocal {
+            if self.service.pullingModel == engine.model {
                 Button("Cancel") { self.service.cancelPull() }
                     .fluidGlassAction(quiet: true)
-            case .ready:
-                Button("Turn on") { self.service.configureAsDictationProvider() }
-                    .fluidGlassAction(prominent: true)
-            case .failed:
-                Button("Try again") { self.service.refresh() }
-                    .fluidGlassAction(prominent: true)
-            }
-            if let onDismiss, self.service.phase != .pulling {
-                Button("Not now", action: onDismiss)
+            } else if isActive {
+                Button("Active") {}
                     .fluidGlassAction(quiet: true)
+                    .disabled(true)
+            } else if self.service.phase == .serverMissing {
+                Button("Needs Ollama") {}
+                    .fluidGlassAction(quiet: true)
+                    .disabled(true)
+            } else if self.service.isInstalled(engine) {
+                Button("Use") { self.service.activate(engine) }
+                    .fluidGlassAction(prominent: true)
+                    .disabled(self.service.pullingModel != nil)
+            } else {
+                Button("Download & use") { self.service.activate(engine) }
+                    .fluidGlassAction(prominent: true)
+                    .disabled(self.service.pullingModel != nil || self.service.phase == .checking)
+                    .help("Downloads \(engine.downloadSizeText ?? "the model") once, then turns it on.")
             }
+        } else if isActive {
+            Button("Active") {}
+                .fluidGlassAction(quiet: true)
+                .disabled(true)
+        } else {
+            Button(self.showsGroqKeyField ? "Hide" : "Set up") { self.showsGroqKeyField.toggle() }
+                .fluidGlassAction(prominent: !self.showsGroqKeyField, quiet: self.showsGroqKeyField)
         }
-        .fixedSize()
     }
 
-    private func openDownloadPage() {
-        guard let url = URL(string: LocalAIDefaults.downloadPage) else { return }
+    private var groqKeyEntry: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Create a free key at console.groq.com, paste it here, and cleanup moves to Groq. Your local engine stays as the fallback when you are offline.")
+                .font(self.theme.typography.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack(spacing: 8) {
+                SecureField("Paste your Groq API key", text: self.$groqKey)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(maxWidth: 360)
+                    .disabled(self.service.isVerifyingGroq)
+                Button("Get a free key") { self.open(LocalAIDefaults.groqKeysPage) }
+                    .fluidGlassAction(quiet: true)
+                Button {
+                    let key = self.groqKey
+                    Task {
+                        await self.service.activateGroq(apiKey: key)
+                        if self.service.lastError == nil {
+                            self.groqKey = ""
+                            self.showsGroqKeyField = false
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        if self.service.isVerifyingGroq { ProgressView().controlSize(.small) }
+                        Text(self.service.isVerifyingGroq ? "Checking…" : "Save & use")
+                    }
+                }
+                .fluidGlassAction(prominent: true)
+                .disabled(self.groqKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || self.service.isVerifyingGroq)
+            }
+        }
+    }
+
+    private func open(_ urlString: String) {
+        guard let url = URL(string: urlString) else { return }
         NSWorkspace.shared.open(url)
     }
 }

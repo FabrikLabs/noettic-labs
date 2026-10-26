@@ -14,7 +14,7 @@ can launch at login.
 | --- | --- | --- |
 | Dictation | Dashboard, History, Stats | Global hotkey, live overlay, per-app history, daily word counts |
 | Dictionary | Dictionary | Corrections (`misspelling → correct spelling`) and custom vocabulary. Imports Wispr Flow CSV files. |
-| Auto Cleanup | AI cleanup | Local Llama 3.2 via Ollama, set up from the Dashboard; or any API key |
+| Auto Cleanup | AI cleanup | Local Llama via Ollama or Groq cloud, chosen on the Dashboard; or any API key |
 | Style | Styles | Cleanup prompts, assignable per app |
 | Transforms | Edit Mode and Command Mode | Rewrite selected text by voice; run actions on your Mac by voice |
 | Scratchpad | Scratchpad | A persistent note you dictate into when the words have no home yet |
@@ -61,35 +61,42 @@ the app's signature changes. If typing stops working after an update, remove
 Noettic Flow from **System Settings › Privacy & Security › Accessibility** and
 add it again.
 
-## AI cleanup with Ollama, on your Mac
+## AI cleanup: local Llama or Groq
 
 Speech recognition is always local. The Wispr-style cleanup pass (filler words out,
-punctuation and self-corrections applied, numbers as digits) needs a language model,
-and Noettic Flow uses [Ollama](https://ollama.com) running **Llama 3.2 (3B)** on
-your Mac for it. Nothing leaves the machine and there is no subscription.
+punctuation and self-corrections applied, numbers as digits) needs a language model.
+The **AI cleanup** card on the Dashboard offers three engines:
 
-The Dashboard shows an **AI cleanup** card until a cleanup provider works:
+| Engine | Model | Runs | Typical time per sentence on an M1 |
+| --- | --- | --- | --- |
+| Fast | Llama 3.2 1B | On your Mac via [Ollama](https://ollama.com) | about 1 s |
+| Balanced | Llama 3.2 3B | On your Mac via Ollama | 2 to 4 s |
+| Fastest | Llama 3.1 8B | Groq's cloud, with your free API key | under 1 s, best wording |
 
-1. **Get Ollama** opens the Ollama download. Install it and open it once; the card
-   notices on its own.
-2. **Download** pulls Llama 3.2 (about 2 GB) with a progress bar.
-3. **Turn on** registers Ollama as the verified dictation provider and enables
-   cleanup. Styles let you tune the prompt per app.
+Local engines keep everything on the machine. For the two local engines the card
+installs what is missing: **Get Ollama** opens the download (install it and open it
+once), then **Download & use** pulls the model with a progress bar and turns it on.
+**Fastest** asks for a Groq key (console.groq.com, free tier is plenty), checks it,
+stores it in the Keychain and switches cleanup to Groq. Only transcript text is
+sent, never audio. The last local engine stays recorded as the fallback: if Groq
+is unreachable the dictation is cleaned locally instead.
 
 Latency is treated as a feature:
 
-- The model is kept resident. Ollama normally unloads a model after five idle
-  minutes; the app renews it every four, and pre-loads it the moment you press
-  the dictation shortcut, so cleanup never waits on a cold start.
+- The ready chime plays on the key press, not after the microphone spins up.
+- When you press the shortcut the local model is loaded and the cleanup prompt is
+  evaluated while you are still speaking, so the stop only processes your words.
+  A keep-warm timer renews this every four minutes.
 - Dictations under four words skip the cleanup pass. "Yes", "Sounds good, thanks"
   are typed as transcribed.
 - Cleanup has a budget of 12 seconds (scaling to a minute for very long
   dictations). If the model is slower than that, the raw transcript is typed
   instead of making you wait.
 
-On an M1 with 16 GB the 3B model cleans a typical sentence in well under a
-second. Any other Ollama model, LM Studio, or a cloud key (OpenAI, Anthropic,
-Groq, Gemini) can be selected under AI Providers instead.
+Measurements behind these choices are in
+[docs/latency-baseline-2026-10-26.md](docs/latency-baseline-2026-10-26.md). Any
+other Ollama model, LM Studio, or a cloud key (OpenAI, Anthropic, Gemini) can be
+selected under AI Providers instead.
 
 ## Bring your Wispr Flow dictionary
 

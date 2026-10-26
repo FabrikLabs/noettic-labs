@@ -3257,15 +3257,50 @@ struct ContentView: View {
             } catch {
                 refiningStatusTask.cancel()
                 self.appBench("ai_process_fail id=\(pipelineID)")
-                // Fall back to the raw transcription so the user still gets
-                // their words typed instead of an error string.
-                DebugLogger.shared.error(
-                    "AI post-processing failed, falling back to raw transcription: \(error.localizedDescription)",
-                    source: "ContentView"
-                )
-                aiFallbackReason = error.localizedDescription
-                aiFallbackNotificationError = DictationAIFailurePresentationPolicy.notificationMessage(for: error)
-                finalText = normalizedTranscribedText
+                // A cloud engine that fails (offline, revoked key, outage) gets one retry on the
+                // local Ollama model before cleanup is given up for this dictation.
+                let primaryProviderID = stopSnapshot?.route.providerID
+                    ?? DictationProviderRoute.resolveDictationDefault(settings: self.settings).providerID
+                var recoveredLocally = false
+                if !(error is CancellationError),
+                   primaryProviderID != LocalAIDefaults.providerID,
+                   let fallbackModel = LocalAIService.shared.fallbackLocalModel
+                {
+                    DebugLogger.shared.warning(
+                        "AI post-processing failed on \(primaryProviderID); retrying on local \(fallbackModel): \(error.localizedDescription)",
+                        source: "ContentView"
+                    )
+                    do {
+                        let result = try await self.processTextWithAIMetrics(
+                            normalizedTranscribedText,
+                            overrideSystemPrompt: promptOverride,
+                            overrideProviderID: LocalAIDefaults.providerID,
+                            overrideModel: fallbackModel,
+                            dictationSlot: activeDictationSlot,
+                            streamHandler: streamHandler,
+                            benchmarkID: pipelineID,
+                            stopSnapshot: nil
+                        )
+                        finalText = result.text
+                        aiTokensPerSecond = result.tokensPerSecond
+                        streamPreview.flush()
+                        recoveredLocally = true
+                        self.appBench("ai_process_local_fallback_ok id=\(pipelineID)")
+                    } catch {
+                        DebugLogger.shared.error("Local cleanup fallback failed too: \(error.localizedDescription)", source: "ContentView")
+                    }
+                }
+                if !recoveredLocally {
+                    // Fall back to the raw transcription so the user still gets
+                    // their words typed instead of an error string.
+                    DebugLogger.shared.error(
+                        "AI post-processing failed, falling back to raw transcription: \(error.localizedDescription)",
+                        source: "ContentView"
+                    )
+                    aiFallbackReason = error.localizedDescription
+                    aiFallbackNotificationError = DictationAIFailurePresentationPolicy.notificationMessage(for: error)
+                    finalText = normalizedTranscribedText
+                }
             }
             let postProcessingLatencyMs = Int(
                 ((ProcessInfo.processInfo.systemUptime - postProcessingStart) * 1000).rounded()
@@ -4695,6 +4730,11 @@ struct ContentView: View {
             )
         }
 
+        // The ready chime answers the key press itself. Waiting for the first audio buffer made
+        // every press feel half a second late even though capture was already starting.
+        if shouldPlayStartSound {
+            TranscriptionSoundPlayer.shared.playStartSound()
+        }
         let captureOverlayLifecycleID = self.overlayLifecycleID
         let captureTask = Task {
             guard !Task.isCancelled else {
@@ -4702,9 +4742,6 @@ struct ContentView: View {
                 return
             }
             let startOutcome = await self.asr.start(onCaptureStarted: {
-                if shouldPlayStartSound {
-                    TranscriptionSoundPlayer.shared.playStartSound()
-                }
                 self.captureRecordingContext()
                 self.prewarmPrivateAIDictationIfNeeded(for: .primary)
                 DebugLogger.shared.benchmark(
@@ -4771,8 +4808,10 @@ struct ContentView: View {
     }
 
     private func prewarmPrivateAIDictationIfNeeded(for slot: SettingsStore.DictationShortcutSlot) {
-        // Local Ollama cleanup: start loading the model while the user is still speaking.
-        LocalAIService.shared.prewarmIfActive()
+        // Local Ollama cleanup: load the model and evaluate the cleanup prompt while the user
+        // is still speaking, so the stop only has to process the new words.
+        let prewarmAppInfo = self.recordingAppInfo ?? self.getCurrentAppInfo()
+        LocalAIService.shared.prewarmIfActive(systemPrompt: self.buildSystemPrompt(appInfo: prewarmAppInfo, dictationSlot: slot))
         let appBundleID = self.asr.isRunningOrStarting ? self.recordingAppInfo?.bundleId : DictationAppSession.shared.appID
         self.prewarmDictationTask?.cancel()
         self.prewarmDictationTask = nil
