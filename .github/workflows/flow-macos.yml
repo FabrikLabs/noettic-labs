@@ -63,13 +63,6 @@ jobs:
           xcodebuild -version
           uname -m
 
-      - name: Cache Swift packages
-        uses: actions/cache@v4
-        with:
-          path: apps/flow/build/DerivedData/SourcePackages
-          key: ${{ runner.os }}-flow-spm-${{ hashFiles('apps/flow/Package.resolved') }}
-          restore-keys: ${{ runner.os }}-flow-spm-
-
       - name: Standalone regression tests
         run: |
           sh Tests/run_wispr_dictionary_csv_tests.sh
@@ -93,8 +86,11 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             build 2>&1 | tee build/xcodebuild.log | xcbeautify --quiet || {
-              echo "::group::Compiler errors (from xcodebuild.log)"
-              grep -E "(error|fatal error): " build/xcodebuild.log | sort -u | head -120
+              echo "::group::Errors (from xcodebuild.log)"
+              grep -n -i -E "error|failed" build/xcodebuild.log | grep -v -i "warning" | tail -n 80 || true
+              echo "::endgroup::"
+              echo "::group::Last 60 lines of xcodebuild.log"
+              tail -n 60 build/xcodebuild.log || true
               echo "::endgroup::"
               exit 1
             }
