@@ -3261,7 +3261,7 @@ struct ContentView: View {
                 // local Ollama model before cleanup is given up for this dictation.
                 let primaryProviderID = stopSnapshot?.route.providerID
                     ?? DictationProviderRoute.resolveDictationDefault(settings: self.settings).providerID
-                var recoveredLocally = false
+                var localResult: AITextProcessingResult?
                 if !(error is CancellationError),
                    primaryProviderID != LocalAIDefaults.providerID,
                    let fallbackModel = LocalAIService.shared.fallbackLocalModel
@@ -3271,7 +3271,7 @@ struct ContentView: View {
                         source: "ContentView"
                     )
                     do {
-                        let result = try await self.processTextWithAIMetrics(
+                        localResult = try await self.processTextWithAIMetrics(
                             normalizedTranscribedText,
                             overrideSystemPrompt: promptOverride,
                             overrideProviderID: LocalAIDefaults.providerID,
@@ -3281,16 +3281,16 @@ struct ContentView: View {
                             benchmarkID: pipelineID,
                             stopSnapshot: nil
                         )
-                        finalText = result.text
-                        aiTokensPerSecond = result.tokensPerSecond
-                        streamPreview.flush()
-                        recoveredLocally = true
-                        self.appBench("ai_process_local_fallback_ok id=\(pipelineID)")
                     } catch {
                         DebugLogger.shared.error("Local cleanup fallback failed too: \(error.localizedDescription)", source: "ContentView")
                     }
                 }
-                if !recoveredLocally {
+                if let localResult {
+                    finalText = localResult.text
+                    aiTokensPerSecond = localResult.tokensPerSecond
+                    streamPreview.flush()
+                    self.appBench("ai_process_local_fallback_ok id=\(pipelineID)")
+                } else {
                     // Fall back to the raw transcription so the user still gets
                     // their words typed instead of an error string.
                     DebugLogger.shared.error(
