@@ -29,10 +29,22 @@ cd noettic-labs
 
 ```
 noettic-labs/
-├── README.md          # This file
-├── LICENSE            # MIT License
-└── .gitignore         # Git ignore rules
+├── index.html          # Noettic Labs website (MIT)
+├── apps/
+│   └── flow/           # Noettic Flow: macOS dictation app, a FluidVoice fork (GPLv3)
+├── .github/workflows/  # CI, including the Noettic Flow macOS build
+├── README.md           # This file
+└── LICENSE             # MIT License for everything outside apps/flow
 ```
+
+### Noettic Flow
+
+`apps/flow` is a Wispr Flow-style dictation app for Apple Silicon Macs: global
+hotkey, on-device speech models, Dictionary (with Wispr Flow CSV import),
+Styles, Scratchpad and Notetaker. It builds on GitHub Actions; download the
+`.dmg` from the latest *Noettic Flow macOS build* run or from a tagged release.
+See [apps/flow/README.md](apps/flow/README.md) for install, permissions and
+build instructions.
 
 ## Contributing
 

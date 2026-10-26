@@ -1,0 +1,965 @@
+import AppKit
+import SwiftUI
+import UniformTypeIdentifiers
+
+nonisolated struct HistoryPinRevealRequest: Equatable {
+    let entryID: UUID
+    private let nonce = UUID()
+
+    func target(selectedID: UUID?, visibleIDs: [UUID]) -> UUID? {
+        guard selectedID == self.entryID, visibleIDs.contains(self.entryID) else { return nil }
+        return self.entryID
+    }
+}
+
+/// A hidden existing row can be selected from sidebar search even when the list is empty.
+nonisolated enum HistorySelectionRevealPolicy {
+    static func needsFilterReset(
+        requestedID: UUID?,
+        selectedID: UUID?,
+        allEntries: [TranscriptionHistoryEntry],
+        visibleEntries: [TranscriptionHistoryEntry]
+    ) -> Bool {
+        guard let selectedID, requestedID == selectedID else { return false }
+        return !visibleEntries.contains { $0.id == selectedID }
+            && allEntries.contains { $0.id == selectedID }
+    }
+}
+
+struct TranscriptionHistoryView: View {
+    @ObservedObject private var historyStore = TranscriptionHistoryStore.shared
+    @ObservedObject private var settings = SettingsStore.shared
+    @Environment(\.theme) private var theme
+
+    @State private var searchQuery: String = ""
+    @State private var pinnedOnly = false
+    @State private var pinRevealRequest: HistoryPinRevealRequest?
+    @State private var showClearConfirmation: Bool = false
+    @State private var showReportConfirmation: Bool = false
+    @State private var selectedReportEntry: TranscriptionHistoryEntry?
+    @State private var audioEntryID: UUID?
+    @State private var copiedEntryID: UUID?
+    @State private var copyFeedbackTask: Task<Void, Never>?
+    @State private var availableAudioFiles: Set<String> = []
+    @State private var audioAvailabilityRevision = UUID()
+    @FocusState private var listFocused: Bool
+
+    private struct AudioAvailabilityRequest: Equatable {
+        let fileNames: [String]
+        let revision: UUID
+    }
+
+    private var audioAvailabilityRequest: AudioAvailabilityRequest {
+        AudioAvailabilityRequest(
+            fileNames: self.historyStore.entries.compactMap { $0.audio?.fileName },
+            revision: self.audioAvailabilityRevision
+        )
+    }
+
+    /// Lives in the store so the sidebar search can select a row before this view
+    /// exists, and the store's delete and clear paths keep it valid.
+    private var selectedEntryID: UUID? {
+        get { self.historyStore.selectedEntryID }
+        nonmutating set { self.historyStore.selectedEntryID = newValue }
+    }
+
+    private var filteredEntries: [TranscriptionHistoryEntry] {
+        self.historyStore.search(query: self.searchQuery, starredOnly: self.pinnedOnly, pinnedFirst: true)
+    }
+
+    private var selectedEntry: TranscriptionHistoryEntry? {
+        guard let id = selectedEntryID else { return self.filteredEntries.first }
+        return self.filteredEntries.first(where: { $0.id == id })
+    }
+
+    var body: some View {
+        HSplitView {
+            // MARK: - Left Panel: Entry List
+
+            VStack(spacing: 0) {
+                HStack(spacing: 8) {
+                    self.searchBar
+                    FluidDropdownPicker("History filter", selectedTitle: self.pinnedOnly ? "Pinned" : "All", selection: self.$pinnedOnly) {
+                        Text("All").tag(false)
+                        Text("Pinned").tag(true)
+                    }
+                    .fluidDropdownStyle()
+                    .fixedSize()
+                }
+                .padding(12)
+
+                if self.historyStore.isLoading {
+                    ProgressView("Loading history…")
+                        .padding(12)
+                } else if let error = self.historyStore.persistenceError {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(error)
+                            .font(.fluidSystem(.caption))
+                        Button("Retry saving history") {
+                            self.historyStore.retryPersistence()
+                        }
+                    }
+                    .padding(12)
+                }
+
+                Divider()
+                    .opacity(0.3)
+
+                // Entry List
+                if self.filteredEntries.isEmpty {
+                    self.emptyStateView
+                } else {
+                    self.entryListView
+                }
+
+                // Footer with stats and clear button
+                self.footerView
+                    .disabled(self.historyStore.isLoading)
+            }
+            .frame(minWidth: 280, idealWidth: 408, maxWidth: 480)
+            .background(self.theme.palette.contentBackground)
+
+            // MARK: - Right Panel: Entry Detail
+
+            if let entry = selectedEntry {
+                self.entryDetailView(entry)
+                    .frame(minWidth: 400)
+            } else {
+                self.noSelectionView
+                    .frame(minWidth: 400)
+            }
+        }
+        .onChange(of: self.historyStore.searchSelectionRequest) { _, _ in
+            self.revealExternalSelection()
+        }
+        .onChange(of: self.filteredEntries.map(\.id)) { _, visibleIDs in
+            if let selectedEntryID = self.selectedEntryID, visibleIDs.contains(selectedEntryID) { return }
+            self.selectedEntryID = visibleIDs.first
+        }
+        .onChange(of: self.selectedEntry?.id) { _, _ in
+            self.audioEntryID = nil
+        }
+        .onDisappear {
+            self.pinRevealRequest = nil
+            self.availableAudioFiles = []
+            self.audioEntryID = nil
+            self.copyFeedbackTask?.cancel()
+            self.copiedEntryID = nil
+        }
+        .onAppear {
+            self.audioAvailabilityRevision = UUID()
+            self.revealExternalSelection()
+            if self.selectedEntryID == nil {
+                self.selectedEntryID = self.filteredEntries.first?.id
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            self.audioAvailabilityRevision = UUID()
+        }
+        .task(id: self.audioAvailabilityRequest) {
+            let request = self.audioAvailabilityRequest
+            let available = await HistoryAudioAvailability.scan(fileNames: request.fileNames) {
+                DictationAudioHistoryStore.shared.audioFileExists(fileName: $0)
+            }
+            guard !Task.isCancelled, request == self.audioAvailabilityRequest else { return }
+            self.availableAudioFiles = available
+            if let entry = self.selectedEntry, !self.hasAudio(entry) {
+                self.audioEntryID = nil
+            }
+        }
+        .alert("Clear All History", isPresented: self.$showClearConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Clear All", role: .destructive) {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    self.historyStore.clearAllHistory()
+                    self.selectedEntryID = nil
+                }
+            }
+        } message: {
+            Text("This will permanently delete all \(self.historyStore.entries.count) transcription entries, including pinned entries. This action cannot be undone.")
+        }
+        .alert("Report Sent", isPresented: self.$showReportConfirmation) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Thank you for helping improve Noettic Flow dictation.")
+        }
+        .sheet(item: self.$selectedReportEntry) { entry in
+            TranscriptionFeedbackReportSheet(entry: entry) {
+                self.selectedReportEntry = nil
+                self.showReportConfirmation = true
+            }
+            .environment(\.theme, self.theme)
+        }
+    }
+
+    // MARK: - Search Bar
+
+    private var searchBar: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .font(.fluidSystem(size: 13, weight: .medium))
+                .foregroundStyle(.secondary)
+
+            TextField("Search transcriptions...", text: self.$searchQuery)
+                .textFieldStyle(.plain)
+                .font(.fluidSystem(size: 13))
+
+            if !self.searchQuery.isEmpty {
+                Button {
+                    self.searchQuery = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.fluidSystem(size: 12))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(RoundedRectangle(cornerRadius: 8)
+            .fill(self.theme.palette.cardBackground)
+            .overlay(RoundedRectangle(cornerRadius: 8)
+                .stroke(self.theme.palette.cardBorder.opacity(0.6), lineWidth: 1)))
+    }
+
+    // MARK: - Entry List
+
+    private var entryListView: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 6) {
+                    ForEach(self.filteredEntries) { entry in
+                        self.entryRow(entry)
+                            .id(entry.id)
+                    }
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
+            }
+            .focusable()
+            .focusEffectDisabled()
+            .focused(self.$listFocused)
+            .onMoveCommand { direction in
+                self.moveSelection(direction, proxy: proxy)
+            }
+            .onCopyCommand {
+                self.copyCommandProviders()
+            }
+            .onAppear { self.reveal(self.selectedEntryID, with: proxy) }
+            .onChange(of: self.historyStore.selectedEntryID) { _, id in self.reveal(id, with: proxy) }
+            .task(id: self.pinRevealRequest) {
+                guard let request = self.pinRevealRequest else { return }
+                // Let the reordered rows reach the list before following the selected one.
+                await Task.yield()
+                guard !Task.isCancelled, self.pinRevealRequest == request else { return }
+                if let id = request.target(selectedID: self.selectedEntryID, visibleIDs: self.filteredEntries.map(\.id)) {
+                    proxy.scrollTo(id)
+                }
+                if self.pinRevealRequest == request { self.pinRevealRequest = nil }
+            }
+        }
+    }
+
+    /// Parent-level handling also runs when no list exists to observe the selection.
+    private func revealExternalSelection() {
+        guard let request = self.historyStore.searchSelectionRequest else { return }
+        defer { self.historyStore.consumeSearchSelectionRequest(request) }
+        guard HistorySelectionRevealPolicy.needsFilterReset(
+            requestedID: request.entryID,
+            selectedID: self.selectedEntryID,
+            allEntries: self.historyStore.entries,
+            visibleEntries: self.filteredEntries
+        ) else { return }
+        self.searchQuery = ""
+        self.pinnedOnly = false
+    }
+
+    /// The parent clears a hidden selection's filters; scroll after that view update.
+    private func reveal(_ id: UUID?, with proxy: ScrollViewProxy) {
+        guard let id else { return }
+        if !self.filteredEntries.contains(where: { $0.id == id }) {
+            DispatchQueue.main.async { proxy.scrollTo(id) }
+        } else {
+            proxy.scrollTo(id)
+        }
+    }
+
+    private func entryRow(_ entry: TranscriptionHistoryEntry) -> some View {
+        let isSelected = self.selectedEntryID == entry.id
+        return HistoryHoverRow(isSelected: isSelected) { showsActions in
+            ZStack(alignment: .bottomTrailing) {
+                Button {
+                    self.selectedEntryID = entry.id
+                    self.listFocused = true
+                } label: {
+                    VStack(alignment: .leading, spacing: 7) {
+                        HStack(spacing: 8) {
+                            HistoryAppIcon(appName: entry.appName)
+                            Spacer(minLength: 4)
+                            Text(entry.relativeTimeString)
+                                .font(self.theme.typography.caption).foregroundStyle(.secondary)
+                        }
+                        .padding(.trailing, 36)
+                        .frame(minHeight: 28)
+                        Text(entry.previewText)
+                            .font(self.theme.typography.body)
+                            .lineLimit(2).multilineTextAlignment(.leading)
+                        HStack(spacing: 10) {
+                            if let model = self.recordedModel(entry) {
+                                Label(model, systemImage: "sparkles")
+                                    .lineLimit(1).truncationMode(.middle)
+                                    .help("Recorded AI model: \(model)")
+                            } else if entry.wasAIProcessed {
+                                Label("AI enhanced", systemImage: "sparkles")
+                            }
+                            if self.hasAudio(entry) {
+                                Image(systemName: "waveform").accessibilityLabel("Saved audio")
+                            }
+                            if entry.aiProcessingError != nil {
+                                Image(systemName: "exclamationmark.triangle")
+                                    .foregroundStyle(.orange).help(entry.aiProcessingError ?? "")
+                            }
+                            Spacer(minLength: 0)
+                            if self.settings.showHistoryPerformanceMetrics, let speed = entry.aiTokensPerSecond {
+                                Text(TranscriptionHistoryEntry.formattedTokensPerSecond(speed, compact: true))
+                                    .font(self.theme.typography.captionStrong)
+                                    .foregroundStyle(self.theme.palette.accent)
+                                    .monospacedDigit()
+                                    .fixedSize()
+                                    .help("AI generation speed, in tokens per second—not total processing time")
+                            }
+                        }
+                        .font(self.theme.typography.caption).foregroundStyle(.secondary)
+                        .padding(.trailing, 76)
+                        .frame(minHeight: 28)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .simultaneousGesture(TapGesture(count: 2).onEnded {
+                    self.selectedEntryID = entry.id
+                    self.listFocused = true
+                    self.copyFinalText(entry)
+                })
+                .help("Double-click to copy final text")
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
+                .accessibilityAction(named: Text("Copy final text")) { self.copyFinalText(entry) }
+                .accessibilityAction(named: Text("Report issue")) { self.openFeedbackReport(for: entry) }
+                .accessibilityAction(named: Text(entry.isStarred ? "Unpin transcription" : "Pin transcription")) {
+                    self.togglePin(entry)
+                }
+                HStack(spacing: 8) {
+                    Button {
+                        self.copyFinalText(entry)
+                    } label: {
+                        Image(systemName: self.copiedEntryID == entry.id ? "checkmark" : "doc.on.doc")
+                            .frame(width: 28, height: 28)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .help("Copy final text")
+                    .accessibilityLabel(self.copiedEntryID == entry.id ? "Copied" : "Copy final text")
+                    Button {
+                        self.openFeedbackReport(for: entry)
+                    } label: {
+                        Image(systemName: "flag")
+                            .frame(width: 28, height: 28)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .help("Report an issue with this dictation")
+                    .accessibilityLabel("Report issue")
+                }
+                .font(self.theme.typography.body)
+                .labelStyle(.iconOnly)
+                .frame(width: 64)
+                .foregroundStyle(.secondary)
+                .opacity(showsActions ? 1 : 0)
+                .allowsHitTesting(showsActions)
+                .accessibilityHidden(!showsActions)
+            }
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    self.togglePin(entry)
+                } label: {
+                    Image(systemName: entry.isStarred ? "pin.fill" : "pin")
+                        .font(self.theme.typography.body)
+                        .frame(width: 28, height: 28)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(entry.isStarred ? self.theme.palette.accent : self.theme.palette.secondaryText)
+                .help(entry.isStarred ? "Unpin transcription" : "Pin transcription")
+                .accessibilityLabel(entry.isStarred ? "Unpin transcription" : "Pin transcription")
+                .accessibilityIdentifier("History.Pin.\(entry.id.uuidString)")
+            }
+        }
+        .padding(12)
+        .background(self.theme.palette.accent.opacity(isSelected ? 0.12 : 0), in: RoundedRectangle(cornerRadius: 14))
+        .overlay(RoundedRectangle(cornerRadius: 14)
+            .strokeBorder(isSelected ? self.theme.palette.accent.opacity(0.6) : self.theme.palette.cardBorder.opacity(0.25)))
+        .contextMenu { self.entryActions(entry) }
+    }
+
+    @ViewBuilder
+    private func entryActions(_ entry: TranscriptionHistoryEntry) -> some View {
+        Button {
+            self.togglePin(entry)
+        } label: {
+            Label(entry.isStarred ? "Unpin" : "Pin", systemImage: entry.isStarred ? "pin.slash" : "pin")
+        }
+
+        Divider()
+
+        Button {
+            self.copyFinalText(entry)
+        } label: {
+            Label(entry.wasAIProcessed ? "Copy AI Text" : "Copy Text", systemImage: "doc.on.doc")
+        }
+
+        if entry.wasAIProcessed {
+            Button {
+                self.copyToClipboard(entry.rawText)
+            } label: {
+                Label("Copy Raw Text", systemImage: "doc.on.doc.fill")
+            }
+
+            Button {
+                self.copyToClipboard(self.combinedText(for: entry))
+            } label: {
+                Label("Copy Both", systemImage: "doc.on.doc")
+            }
+        }
+
+        if self.hasAudio(entry) {
+            Divider()
+
+            Button {
+                self.exportPair(entry)
+            } label: {
+                Label("Export Pair...", systemImage: "square.and.arrow.up")
+            }
+
+            Button {
+                self.revealAudio(entry)
+            } label: {
+                Label("Reveal Audio", systemImage: "waveform")
+            }
+        }
+
+        Divider()
+
+        Button {
+            self.openFeedbackReport(for: entry)
+        } label: {
+            Label("Report issue...", systemImage: "flag")
+        }
+
+        Divider()
+
+        Button(role: .destructive) {
+            if self.audioEntryID == entry.id { self.audioEntryID = nil }
+            self.historyStore.deleteEntry(id: entry.id)
+            if self.selectedEntryID == entry.id {
+                self.selectedEntryID = self.filteredEntries.first(where: { $0.id != entry.id })?.id
+            }
+        } label: {
+            Label("Delete", systemImage: "trash")
+        }
+    }
+
+    private func togglePin(_ entry: TranscriptionHistoryEntry) {
+        self.pinRevealRequest = nil
+        self.historyStore.toggleStar(id: entry.id)
+        guard self.selectedEntryID == entry.id, self.filteredEntries.contains(where: { $0.id == entry.id }) else { return }
+        self.pinRevealRequest = HistoryPinRevealRequest(entryID: entry.id)
+    }
+
+    // MARK: - Empty State
+
+    private var emptyStateIcon: String {
+        if !self.searchQuery.isEmpty { return "magnifyingglass" }
+        return self.pinnedOnly ? "pin" : "clock.arrow.circlepath"
+    }
+
+    private var emptyStateTitle: String {
+        if !self.searchQuery.isEmpty { return "No Results" }
+        return self.pinnedOnly ? "No Pinned Transcriptions" : "No History Yet"
+    }
+
+    private var emptyStateMessage: String {
+        if !self.searchQuery.isEmpty { return "Try a different search term" }
+        return self.pinnedOnly
+            ? "Pin a transcription to keep it at the top of History"
+            : "Your transcriptions will appear here"
+    }
+
+    private var emptyStateView: some View {
+        VStack(spacing: 16) {
+            Spacer()
+
+            Image(systemName: self.emptyStateIcon)
+                .font(.fluidSystem(size: 36, weight: .light))
+                .foregroundStyle(.tertiary)
+
+            VStack(spacing: 4) {
+                Text(self.emptyStateTitle)
+                    .font(.fluidSystem(size: 14, weight: .semibold))
+                    .foregroundStyle(.secondary)
+
+                Text(self.emptyStateMessage)
+                    .font(.fluidSystem(size: 12))
+                    .foregroundStyle(.tertiary)
+                    .multilineTextAlignment(.center)
+            }
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+    }
+
+    // MARK: - Footer
+
+    private var footerView: some View {
+        VStack(spacing: 0) {
+            Divider()
+                .opacity(0.3)
+
+            HStack {
+                // Stats
+                Text(self.filteredEntries.count == 1 ? "1 entry" : "\(self.filteredEntries.count) entries")
+                    .font(.fluidSystem(size: 11, weight: .medium))
+                    .foregroundStyle(.tertiary)
+
+                Spacer()
+
+                // Clear All Button
+                if !self.historyStore.entries.isEmpty {
+                    Button {
+                        self.showClearConfirmation = true
+                    } label: {
+                        Text("Clear All")
+                            .font(.fluidSystem(size: 11, weight: .medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .opacity(0.8)
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+        }
+    }
+
+    // MARK: - Entry Detail View
+
+    private func entryDetailView(_ entry: TranscriptionHistoryEntry) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 16) {
+                        self.detailHeading(entry)
+                        Spacer(minLength: 12)
+                        self.detailActions(entry)
+                    }
+                    VStack(alignment: .leading, spacing: 16) {
+                        self.detailHeading(entry)
+                        self.detailActions(entry)
+                    }
+                }
+                if self.audioEntryID == entry.id {
+                    HistoryInlineAudioView(entry: entry)
+                        .id(entry.id)
+                }
+                if let error = entry.aiProcessingError {
+                    Label {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("AI enhancement failed—raw transcription was used").font(self.theme.typography.bodyStrong)
+                            Text(error).font(self.theme.typography.caption).textSelection(.enabled)
+                        }
+                    } icon: {
+                        Image(systemName: "exclamationmark.triangle").foregroundStyle(.orange)
+                    }
+                    .padding(16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
+                }
+                HistoryTextComparisonView(entry: entry, copy: self.copyToClipboard)
+                    .id(entry.id)
+                FluidManagementGroup(title: "Processing") {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: 16, alignment: .leading)], alignment: .leading, spacing: 16) {
+                        if self.settings.showHistoryPerformanceMetrics {
+                            if let duration = entry.parakeetProcessingDurationMilliseconds ?? entry.transcriptionDurationMilliseconds {
+                                self.metadataItem(
+                                    icon: "waveform",
+                                    label: "Transcription",
+                                    value: TranscriptionHistoryEntry.formattedDuration(milliseconds: duration)
+                                )
+                            }
+                            if let duration = entry.aiProcessingDurationMilliseconds {
+                                self.metadataItem(
+                                    icon: "sparkles",
+                                    label: "AI cleanup",
+                                    value: TranscriptionHistoryEntry.formattedDuration(milliseconds: duration)
+                                )
+                            }
+                            if let speed = entry.aiTokensPerSecond {
+                                self.metadataItem(
+                                    icon: "speedometer",
+                                    label: "AI speed",
+                                    value: TranscriptionHistoryEntry.formattedTokensPerSecond(speed, compact: true)
+                                )
+                            }
+                        }
+                        self.metadataItem(
+                            icon: "sparkles",
+                            label: entry.aiProcessingError == nil ? "AI model" : "AI model (failed)",
+                            value: self.recordedModel(entry) ?? (entry.wasAIProcessed ? "Not recorded" : "No AI cleanup")
+                        )
+                    }
+                }
+                FluidManagementGroup(title: "Details") {
+                    LazyVGrid(columns: self.detailColumns, alignment: .leading, spacing: 16) {
+                        self.metadataItem(icon: "app", label: "Application", value: entry.appName.isEmpty ? "Unknown" : entry.appName)
+                        self.metadataItem(icon: "waveform", label: "Recording", value: self.recordingDurationText(for: entry))
+                        self.metadataItem(icon: "internaldrive", label: "Audio size", value: self.audioSizeText(for: entry))
+                    }
+                }
+            }
+            .fluidPageContent()
+        }
+        .background(self.theme.palette.contentBackground)
+    }
+
+    private func detailHeading(_ entry: TranscriptionHistoryEntry) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: "clock.arrow.circlepath")
+                .font(.fluidSystem(size: 24, weight: .medium))
+                .foregroundStyle(self.theme.palette.accent)
+                .frame(width: 52, height: 52)
+                .background(self.theme.palette.accent.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Dictation details").font(self.theme.typography.title)
+                Text(entry.fullDateString).font(self.theme.typography.caption).foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private var detailColumns: [GridItem] {
+        Array(repeating: GridItem(.flexible(minimum: 0), spacing: 16, alignment: .leading), count: 3)
+    }
+
+    private func recordedModel(_ entry: TranscriptionHistoryEntry) -> String? {
+        guard let model = entry.processingModel?.trimmingCharacters(in: .whitespacesAndNewlines), !model.isEmpty else { return nil }
+        return ModelDisplayName.forID(model)
+    }
+
+    private func detailActions(_ entry: TranscriptionHistoryEntry) -> some View {
+        FluidGlassControlGroup {
+            HStack(spacing: 8) {
+                Button { self.openFeedbackReport(for: entry) } label: {
+                    Label("Report issue", systemImage: "flag")
+                }
+                .fluidGlassAction()
+                Button { self.copyFinalText(entry) } label: {
+                    Label(
+                        self.copiedEntryID == entry.id ? "Copied" : "Copy text",
+                        systemImage: self.copiedEntryID == entry.id ? "checkmark" : "doc.on.doc"
+                    )
+                }
+                .fluidGlassAction(prominent: true)
+                .disabled(entry.clipboardText == nil)
+                if self.hasAudio(entry) {
+                    Button {
+                        self.audioEntryID = self.audioEntryID == entry.id ? nil : entry.id
+                    } label: {
+                        Label(self.audioEntryID == entry.id ? "Close audio" : "Audio", systemImage: "waveform")
+                    }
+                    .fluidGlassAction()
+                }
+                Menu { self.entryActions(entry) } label: { Image(systemName: "ellipsis") }
+                    .menuIndicator(.hidden)
+                    .fluidGlassAction(circular: true)
+                    .accessibilityLabel("Dictation actions")
+            }
+        }
+    }
+
+    private func metadataItem(icon: String, label: String, value: String) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon).font(.fluidSystem(size: 18)).foregroundStyle(self.theme.palette.accent)
+                .frame(width: 24)
+            VStack(alignment: .leading, spacing: 5) {
+                Text(label).font(self.theme.typography.caption).foregroundStyle(.secondary)
+                Text(value).font(self.theme.typography.bodyStrong).monospacedDigit()
+            }
+            Spacer(minLength: 0)
+        }
+    }
+
+    private func copyFinalText(_ entry: TranscriptionHistoryEntry) {
+        guard let text = entry.clipboardText else { return }
+        self.copyToClipboard(text)
+        self.showCopiedFeedback(for: entry)
+    }
+
+    private func showCopiedFeedback(for entry: TranscriptionHistoryEntry) {
+        self.copyFeedbackTask?.cancel()
+        self.copiedEntryID = entry.id
+        self.copyFeedbackTask = Task { @MainActor in
+            do { try await Task.sleep(for: .seconds(1.5)) } catch { return }
+            self.copiedEntryID = nil
+        }
+    }
+
+    private func moveSelection(_ direction: MoveCommandDirection, proxy: ScrollViewProxy) {
+        let entries = self.filteredEntries
+        guard !entries.isEmpty else { return }
+        let current = self.selectedEntryID.flatMap { id in entries.firstIndex(where: { $0.id == id }) }
+        let next: Int
+        switch direction {
+        case .up: next = max((current ?? 0) - 1, 0)
+        case .down: next = current.map { min($0 + 1, entries.count - 1) } ?? 0
+        default: return
+        }
+        let id = entries[next].id
+        self.selectedEntryID = id
+        proxy.scrollTo(id)
+    }
+
+    private func copyCommandProviders() -> [NSItemProvider] {
+        guard let entry = self.selectedEntry, let text = entry.clipboardText else { return [] }
+        ClipboardAudit.record("ui_copy_command")
+        self.showCopiedFeedback(for: entry)
+        return [NSItemProvider(object: text as NSString)]
+    }
+
+    private func copyToClipboard(_ text: String) {
+        ClipboardAudit.record("ui_copy_begin")
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+        ClipboardAudit.record("ui_copy_end")
+    }
+
+    private func openFeedbackReport(for entry: TranscriptionHistoryEntry) {
+        self.selectedReportEntry = entry
+    }
+
+    private func combinedText(for entry: TranscriptionHistoryEntry) -> String {
+        "\(entry.rawText)\n\n\(entry.processedText)"
+    }
+
+    private func hasAudio(_ entry: TranscriptionHistoryEntry) -> Bool {
+        guard let audio = entry.audio else { return false }
+        return self.availableAudioFiles.contains(audio.fileName)
+    }
+
+    private func recordingDurationText(for entry: TranscriptionHistoryEntry) -> String {
+        guard let audio = entry.audio else { return "Not saved" }
+        return String(format: "%.1fs", Double(audio.durationMilliseconds) / 1000.0)
+    }
+
+    private func audioSizeText(for entry: TranscriptionHistoryEntry) -> String {
+        guard let audio = entry.audio else { return "Not saved" }
+        guard self.hasAudio(entry) else { return "Unavailable" }
+        return ByteCountFormatter.string(fromByteCount: Int64(audio.byteCount), countStyle: .file)
+    }
+
+    private func revealAudio(_ entry: TranscriptionHistoryEntry) {
+        guard let url = DictationAudioHistoryStore.shared.audioFileURL(for: entry),
+              FileManager.default.fileExists(atPath: url.path)
+        else {
+            return
+        }
+        NSWorkspace.shared.activateFileViewerSelecting([url])
+    }
+
+    private func exportPair(_ entry: TranscriptionHistoryEntry) {
+        do {
+            guard self.hasAudio(entry) else { throw DictationAudioHistoryError.audioMissing }
+            let panel = NSSavePanel()
+            panel.canCreateDirectories = true
+            panel.allowedContentTypes = [.zip]
+            panel.nameFieldStringValue = DictationAudioHistoryStore.shared.suggestedPairExportFilename(for: entry)
+
+            guard panel.runModal() == .OK, let url = panel.url else { return }
+            try DictationAudioHistoryStore.shared.exportPair(entry: entry, to: url)
+        } catch {
+            let alert = NSAlert()
+            alert.messageText = "Pair Export Failed"
+            alert.informativeText = error.localizedDescription
+            alert.alertStyle = .critical
+            alert.addButton(withTitle: "OK")
+            alert.runModal()
+        }
+    }
+
+    // MARK: - No Selection View
+
+    private var noSelectionView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "text.quote")
+                .font(.fluidSystem(size: 40, weight: .light))
+                .foregroundStyle(.tertiary)
+
+            Text("Select a transcription")
+                .font(.fluidSystem(size: 14, weight: .medium))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(self.theme.palette.contentBackground)
+    }
+}
+
+private struct TranscriptionFeedbackReportSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.theme) private var theme
+
+    @State private var inputText: String
+    @State private var outputText: String
+    @State private var processingModel: String
+    @State private var comment: String
+    @State private var isSending: Bool = false
+    @State private var errorMessage: String?
+
+    let onSent: () -> Void
+
+    init(entry: TranscriptionHistoryEntry, onSent: @escaping () -> Void) {
+        _inputText = State(initialValue: entry.rawText)
+        _outputText = State(initialValue: entry.processedText)
+        _processingModel = State(initialValue: Self.reportModel(for: entry))
+        _comment = State(initialValue: "")
+        self.onSent = onSent
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Share anonymous datapoint")
+                    .font(.fluidSystem(size: 18, weight: .semibold))
+                Text("Help improve our model. Only the example shown below will be sent.")
+                    .font(.fluidSystem(size: 12))
+                    .foregroundStyle(.secondary)
+            }
+
+            self.feedbackField(title: "Raw Text", text: self.$inputText, height: 88)
+            self.feedbackField(title: "Processed Text", text: self.$outputText, height: 88)
+            self.feedbackField(title: "Processing Model", text: self.$processingModel, height: 40)
+            self.feedbackField(title: "Comment optional", text: self.$comment, height: 72)
+
+            if let errorMessage {
+                Text(errorMessage)
+                    .font(.fluidSystem(size: 12, weight: .medium))
+                    .foregroundStyle(.red)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            HStack {
+                Spacer()
+                Button("Cancel") {
+                    self.dismiss()
+                }
+                .keyboardShortcut(.cancelAction)
+                .disabled(self.isSending)
+
+                Button {
+                    Task {
+                        await self.sendReport()
+                    }
+                } label: {
+                    HStack(spacing: 8) {
+                        if self.isSending {
+                            ProgressView()
+                                .controlSize(.small)
+                                .fixedSize()
+                        }
+                        Text(self.isSending ? "Sending..." : "Send Example")
+                    }
+                }
+                .keyboardShortcut(.defaultAction)
+                .buttonStyle(.borderedProminent)
+                .disabled(self.isSendDisabled)
+            }
+        }
+        .padding(20)
+        .frame(width: 520)
+        .background(self.theme.palette.contentBackground)
+    }
+
+    private var isSendDisabled: Bool {
+        self.isSending ||
+            (self.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+                self.outputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) ||
+            self.processingModel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private func sendReport() async {
+        let payload = TranscriptionFeedbackReporter.Payload(
+            rawText: self.inputText.trimmingCharacters(in: .whitespacesAndNewlines),
+            processedText: self.outputText.trimmingCharacters(in: .whitespacesAndNewlines),
+            processingModel: self.processingModel.trimmingCharacters(in: .whitespacesAndNewlines),
+            comments: self.comment.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
+
+        self.isSending = true
+        self.errorMessage = nil
+        do {
+            try await TranscriptionFeedbackReporter.submit(payload)
+            self.isSending = false
+            self.onSent()
+        } catch {
+            self.errorMessage = error.localizedDescription
+            self.isSending = false
+        }
+    }
+
+    private func feedbackField(title: String, text: Binding<String>, height: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.fluidSystem(size: 11, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+
+            TextEditor(text: text)
+                .font(.fluidSystem(size: 13))
+                .scrollContentBackground(.hidden)
+                .padding(8)
+                .frame(height: height)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(self.theme.palette.cardBackground)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(self.theme.palette.cardBorder.opacity(0.55), lineWidth: 1)
+                        )
+                )
+        }
+    }
+
+    private static func reportModel(for entry: TranscriptionHistoryEntry) -> String {
+        let model = entry.processingModel?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return model.isEmpty ? "unknown" : model
+    }
+}
+
+private struct HistoryHoverRow<Content: View>: View {
+    let isSelected: Bool
+    @ViewBuilder let content: (Bool) -> Content
+    @State private var isHovered = false
+    @FocusState private var containsFocus: Bool
+
+    var body: some View {
+        self.content(self.isHovered || self.isSelected || self.containsFocus)
+            .focused(self.$containsFocus)
+            .onHover { self.isHovered = $0 }
+    }
+}
+
+#Preview {
+    TranscriptionHistoryView()
+        .frame(width: 800, height: 600)
+        .environment(\.theme, AppTheme.dark)
+}

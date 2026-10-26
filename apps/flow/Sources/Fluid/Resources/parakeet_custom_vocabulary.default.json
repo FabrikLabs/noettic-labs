@@ -1,0 +1,19 @@
+{
+  "alpha": 2.8,
+  "minCtcScore": -2.2,
+  "minSimilarity": 0.72,
+  "minCombinedConfidence": 0.64,
+  "minTermLength": 3,
+  "terms": [
+    {
+      "text": "Noettic Flow",
+      "aliases": ["noetic flow", "no attic flow"],
+      "weight": 10.0
+    },
+    {
+      "text": "Noettic Labs",
+      "aliases": ["noetic labs", "no attic labs"],
+      "weight": 10.0
+    }
+  ]
+}
