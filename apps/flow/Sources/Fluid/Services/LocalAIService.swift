@@ -64,6 +64,7 @@ final class LocalAIService: ObservableObject {
     private var pullTask: Task<Void, Never>?
     private var pollTask: Task<Void, Never>?
     private var keepWarmTask: Task<Void, Never>?
+    private var didRepairGroqRoute = false
     private var monitors = 0
     private var lastSystemPrompt: String?
 
@@ -265,24 +266,48 @@ final class LocalAIService: ObservableObject {
 
         let engine = LocalAICleanupEngine.groqCloud
         let baseURL = ModelRepository.shared.defaultBaseURL(for: engine.providerID)
+        let offered: [String]
         do {
-            try await Self.verifyBearerKey(key, baseURL: baseURL)
+            offered = try await Self.verifyBearerKey(key, baseURL: baseURL)
         } catch {
             self.lastError = error.localizedDescription
             return
         }
+        // Groq moves models between tiers without notice; use the best one this key can reach.
+        let model = LocalAICleanupEngine.preferredGroqModel(available: offered) ?? engine.model
 
         var keys = self.settings.providerAPIKeys
         keys[engine.providerID] = key
         self.settings.providerAPIKeys = keys
-        guard self.registerVerifiedProvider(providerID: engine.providerID, model: engine.model, baseURL: baseURL, apiKey: key) else {
+        guard self.registerVerifiedProvider(providerID: engine.providerID, model: model, baseURL: baseURL, apiKey: key) else {
             self.lastError = "Could not save the Groq setup."
             return
         }
-        DebugLogger.shared.info("Cloud cleanup configured: provider=\(engine.providerID) model=\(engine.model)", source: "LocalAIService")
+        DebugLogger.shared.info("Cloud cleanup configured: provider=\(engine.providerID) model=\(model) offered=\(offered.count)", source: "LocalAIService")
     }
 
-    private nonisolated static func verifyBearerKey(_ key: String, baseURL: String) async throws {
+    /// Once per launch, when dictation routes to Groq, checks that the configured model is still
+    /// one the key can use and moves to the best available one if not. Groq retired the model an
+    /// earlier build pinned, which made every cleanup fail in a quarter second.
+    func repairGroqRouteIfNeeded() async {
+        guard !self.didRepairGroqRoute, self.activeEngine == .groqCloud, let key = self.storedGroqKey else { return }
+        self.didRepairGroqRoute = true
+        let route = DictationProviderRoute.resolveDictationDefault(settings: self.settings)
+        let baseURL = ModelRepository.shared.defaultBaseURL(for: LocalAIDefaults.groqProviderID)
+        guard let offered = try? await Self.verifyBearerKey(key, baseURL: baseURL), !offered.isEmpty else { return }
+        let current = route.model.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        if offered.contains(where: { $0.lowercased() == current }) { return }
+        guard let replacement = LocalAICleanupEngine.preferredGroqModel(available: offered) else {
+            DebugLogger.shared.warning("Groq no longer offers \(route.model) and none of the preferred models are available", source: "LocalAIService")
+            return
+        }
+        if self.registerVerifiedProvider(providerID: LocalAIDefaults.groqProviderID, model: replacement, baseURL: baseURL, apiKey: key) {
+            DebugLogger.shared.info("Groq no longer offers \(route.model); cleanup moved to \(replacement)", source: "LocalAIService")
+        }
+    }
+
+    /// Returns the model IDs the key can use; an empty list when the reply could not be parsed.
+    private nonisolated static func verifyBearerKey(_ key: String, baseURL: String) async throws -> [String] {
         let trimmedBase = baseURL.hasSuffix("/") ? String(baseURL.dropLast()) : baseURL
         guard let url = URL(string: "\(trimmedBase)/models") else { throw URLError(.badURL) }
         var request = URLRequest(url: url, timeoutInterval: 15)
@@ -296,7 +321,7 @@ final class LocalAIService: ObservableObject {
         }
         guard let http = reply.response as? HTTPURLResponse else { throw LocalAIError.keyUnreachable("no response") }
         switch http.statusCode {
-        case 200...299: return
+        case 200...299: return (try? LocalAICleanupEngine.modelIDs(fromOpenAIModelsResponse: reply.data)) ?? []
         case 401, 403: throw LocalAIError.keyRejected
         default: throw LocalAIError.keyUnreachable("HTTP \(http.statusCode)")
         }
@@ -353,6 +378,7 @@ final class LocalAIService: ObservableObject {
     func startKeepWarm() {
         guard self.keepWarmTask == nil else { return }
         self.keepWarmTask = Task { [weak self] in
+            await self?.repairGroqRouteIfNeeded()
             while !Task.isCancelled {
                 if let self, let model = self.activeModel() {
                     await Self.warm(model: model, systemPrompt: nil)

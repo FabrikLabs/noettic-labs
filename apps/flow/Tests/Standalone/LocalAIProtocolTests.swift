@@ -51,7 +51,21 @@ struct LocalAIProtocolTests {
         // Engine catalogue.
         check(LocalAICleanupEngine.match(providerID: "ollama", model: "llama3.2:3b") == .balancedLocal, "3B maps to Balanced")
         check(LocalAICleanupEngine.match(providerID: "Ollama", model: "LLAMA3.2:1b") == .fastLocal, "Matching ignores case")
-        check(LocalAICleanupEngine.match(providerID: "groq", model: "llama-3.1-8b-instant") == .groqCloud, "Groq maps to Fastest")
+        check(LocalAICleanupEngine.match(providerID: "groq", model: "openai/gpt-oss-20b") == .groqCloud, "Groq maps to Fastest")
+        check(LocalAICleanupEngine.match(providerID: "groq", model: "llama-3.1-8b-instant") == .groqCloud, "A Groq setup on an older preferred model is still Fastest")
+        check(LocalAICleanupEngine.match(providerID: "groq", model: "whisper-large-v3") == nil, "Other Groq models are not the card engine")
+        check(LocalAICleanupEngine.groqCloud.model == "openai/gpt-oss-20b", "Fastest defaults to the first preferred Groq model")
+
+        // Groq model choice follows what the key can use.
+        let groqModels = Data("""
+        {"object":"list","data":[{"id":"whisper-large-v3","object":"model"},{"id":"openai/gpt-oss-120b","object":"model"},{"id":"openai/gpt-oss-20b","object":"model"}]}
+        """.utf8)
+        let offered = try LocalAICleanupEngine.modelIDs(fromOpenAIModelsResponse: groqModels)
+        check(offered == ["whisper-large-v3", "openai/gpt-oss-120b", "openai/gpt-oss-20b"], "Parses OpenAI-style model list: \(offered)")
+        check(LocalAICleanupEngine.preferredGroqModel(available: offered) == "openai/gpt-oss-20b", "Picks the fastest usable Groq model")
+        check(LocalAICleanupEngine.preferredGroqModel(available: ["Llama-3.3-70b-versatile", "whisper-large-v3"]) == "llama-3.3-70b-versatile", "Falls through the preference list, ignoring case")
+        check(LocalAICleanupEngine.preferredGroqModel(available: ["whisper-large-v3"]) == nil, "No usable model gives nil")
+        check(LocalAICleanupEngine.preferredGroqModel(available: []) == nil, "Empty list gives nil")
         check(LocalAICleanupEngine.match(providerID: "openai", model: "gpt-4o-mini") == nil, "Other providers are not card engines")
         check(LocalAICleanupEngine.match(providerID: "ollama", model: "qwen2.5:3b") == nil, "Other local models are not card engines")
         check(LocalAICleanupEngine.allCases.filter(\.isLocal).count == 2 && !LocalAICleanupEngine.groqCloud.isLocal, "Two local engines, one cloud")

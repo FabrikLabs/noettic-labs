@@ -147,8 +147,31 @@ enum LocalAICleanupEngine: String, CaseIterable, Identifiable {
         switch self {
         case .fastLocal: return "llama3.2:1b"
         case .balancedLocal: return "llama3.2:3b"
-        case .groqCloud: return "llama-3.1-8b-instant"
+        case .groqCloud: return Self.groqModelPreference[0]
         }
+    }
+
+    /// Groq models that suit dictation cleanup, best first. Groq retires and re-tiers models
+    /// without notice, so activation picks the first of these the key can actually use.
+    static let groqModelPreference = [
+        "openai/gpt-oss-20b",
+        "llama-3.1-8b-instant",
+        "openai/gpt-oss-120b",
+        "llama-3.3-70b-versatile",
+    ]
+
+    /// The best cleanup model among the IDs Groq lists for a key, or nil when none is usable.
+    static func preferredGroqModel(available: [String]) -> String? {
+        let offered = Set(available.map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
+        return self.groqModelPreference.first { offered.contains($0.lowercased()) }
+    }
+
+    /// Model IDs from an OpenAI-style `GET /models` reply (`{"data":[{"id":"..."}]}`).
+    static func modelIDs(fromOpenAIModelsResponse data: Data) throws -> [String] {
+        let object = try JSONSerialization.jsonObject(with: data)
+        guard let dictionary = object as? [String: Any] else { throw OllamaProtocol.ProtocolError.unexpectedResponse }
+        let entries = dictionary["data"] as? [[String: Any]] ?? []
+        return entries.compactMap { ($0["id"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
     }
 
     var title: String {
@@ -163,7 +186,7 @@ enum LocalAICleanupEngine: String, CaseIterable, Identifiable {
         switch self {
         case .fastLocal: return "Llama 3.2 1B on this Mac. About a second per sentence, nothing leaves your Mac."
         case .balancedLocal: return "Llama 3.2 3B on this Mac. Better wording, two to four seconds per sentence on an M1."
-        case .groqCloud: return "Llama 3.1 8B on Groq's servers. Under a second, best wording; transcript text is sent to Groq."
+        case .groqCloud: return "GPT-OSS 20B on Groq's servers. Under a second, best wording; transcript text is sent to Groq."
         }
     }
 
@@ -181,6 +204,11 @@ enum LocalAICleanupEngine: String, CaseIterable, Identifiable {
     static func match(providerID: String, model: String) -> LocalAICleanupEngine? {
         let provider = providerID.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         let wanted = OllamaProtocol.canonicalName(model)
+        if provider == Self.groqCloud.providerID {
+            // Any of the preferred Groq models counts as Fastest, so a setup made before a
+            // model was retired still shows as active while it is repaired.
+            return self.groqModelPreference.contains { $0.lowercased() == wanted } ? .groqCloud : nil
+        }
         return Self.allCases.first { $0.providerID == provider && OllamaProtocol.canonicalName($0.model) == wanted }
     }
 }

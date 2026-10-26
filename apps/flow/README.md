@@ -71,7 +71,7 @@ The **AI cleanup** card on the Dashboard offers three engines:
 | --- | --- | --- | --- |
 | Fast | Llama 3.2 1B | On your Mac via [Ollama](https://ollama.com) | about 1 s |
 | Balanced | Llama 3.2 3B | On your Mac via Ollama | 2 to 4 s |
-| Fastest | Llama 3.1 8B | Groq's cloud, with your free API key | under 1 s, best wording |
+| Fastest | GPT-OSS 20B (or the best model your key offers) | Groq's cloud, with your free API key | under 1 s, best wording |
 
 Local engines keep everything on the machine. For the two local engines the card
 installs what is missing: **Get Ollama** opens the download (install it and open it

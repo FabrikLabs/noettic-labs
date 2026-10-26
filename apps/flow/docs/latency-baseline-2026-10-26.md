@@ -33,7 +33,7 @@ dictation 1 points at the prompt not being reused between requests.
 
 - Ready chime on key press.
 - Cleanup engine choice on the Dashboard: Fast (`llama3.2:1b`), Balanced
-  (`llama3.2:3b`), Fastest (Groq `llama-3.1-8b-instant`, cloud).
+  (`llama3.2:3b`), Fastest (Groq, `openai/gpt-oss-20b` or the best model the key offers, cloud).
 - The cleanup system prompt is evaluated on Ollama right after each cleanup
   finishes, while the model is idle, so the next request only has to process the
   new transcript tokens. (A first version did this on the key press; Ollama serves
