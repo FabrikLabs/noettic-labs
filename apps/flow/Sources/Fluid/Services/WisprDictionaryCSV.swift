@@ -69,7 +69,7 @@ enum WisprDictionaryCSV {
         for rawLine in normalized.split(omittingEmptySubsequences: false, whereSeparator: { $0 == "\n" || $0 == "\r\n" || $0 == "\r" }) {
             let line = String(rawLine)
             let hasInvisible = line.unicodeScalars.contains { self.isInvisible($0) }
-            let isBlank = !hasInvisible && line.unicodeScalars.allSatisfy { CharacterSet.whitespacesAndNewlines.contains($0) }
+            let isBlank = !hasInvisible && line.unicodeScalars.allSatisfy(\.properties.isWhitespace)
             if isBlank { continue }
 
             guard let fields = try? self.splitFields(line) else {
@@ -175,17 +175,20 @@ enum WisprDictionaryCSV {
         return String(scalars)
     }
 
+    /// Unicode properties, not Foundation character sets, so every platform agrees on what
+    /// counts as whitespace (White_Space) versus an invisible format or control character.
     private static func isTrimmable(_ scalar: Unicode.Scalar) -> Bool {
-        CharacterSet.whitespacesAndNewlines.contains(scalar) || self.isInvisible(scalar)
+        scalar.properties.isWhitespace || self.isInvisible(scalar)
     }
 
     private static func isInvisible(_ scalar: Unicode.Scalar) -> Bool {
-        if CharacterSet.whitespacesAndNewlines.contains(scalar) { return false }
+        if scalar.properties.isWhitespace { return false }
         switch scalar.value {
         case 0x200B...0x200F, 0x2028...0x202E, 0x2060...0x2064, 0xFEFF, 0x00AD, 0x180E:
             return true
         default:
-            return CharacterSet.controlCharacters.contains(scalar)
+            let category = scalar.properties.generalCategory
+            return category == .control || category == .format
         }
     }
 

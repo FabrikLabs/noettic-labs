@@ -49,7 +49,10 @@ struct WisprDictionaryCSVTests {
         // Invisible characters and duplicates.
         let invisible = WisprDictionaryCSV.parse(text: "\u{200B}\u{200B}\n\u{FEFF}Noettic\u{200B},Fixed\nnoettic,Other\nNOETTIC")
         check(invisible.replacements == [.init(misspelling: "Noettic", correction: "Fixed")], "Zero-width padding is trimmed and the first occurrence wins: \(invisible.replacements)")
-        check(invisible.vocabulary.isEmpty && invisible.skippedRows == 1, "Invisible-only rows are skipped, later duplicates are dropped silently")
+        check(invisible.vocabulary.isEmpty, "Later duplicates are dropped silently: \(invisible.vocabulary)")
+        check(invisible.skippedRows == 1, "Invisible-only rows are skipped once: \(invisible.skippedRows)")
+        check(WisprDictionaryCSV.parse(text: "\u{200B}\u{200B}").skippedRows == 1, "A zero-width-only line counts as one skipped row")
+        check(WisprDictionaryCSV.parse(text: "\t \u{3000}\n").isEmpty, "Tabs and wide spaces alone are blank, not skipped")
 
         // Unicode content survives.
         let unicode = WisprDictionaryCSV.parse(text: "café,Café\n日本語\n🚀 launch")
