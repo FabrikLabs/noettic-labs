@@ -68,7 +68,9 @@ enum WisprDictionaryCSV {
 
         for rawLine in normalized.split(omittingEmptySubsequences: false, whereSeparator: { $0 == "\n" || $0 == "\r\n" || $0 == "\r" }) {
             let line = String(rawLine)
-            if line.trimmingCharacters(in: .whitespaces).isEmpty { continue }
+            let hasInvisible = line.unicodeScalars.contains { self.isInvisible($0) }
+            let isBlank = !hasInvisible && line.unicodeScalars.allSatisfy { CharacterSet.whitespacesAndNewlines.contains($0) }
+            if isBlank { continue }
 
             guard let fields = try? self.splitFields(line) else {
                 result.skippedRows += 1
@@ -76,10 +78,9 @@ enum WisprDictionaryCSV {
             }
             let values = fields.map(self.cleaned).filter { !$0.isEmpty }
             guard !values.isEmpty else {
-                // Commas, quotes or spaces only import nothing. A row that held visible-looking
-                // content made only of invisible characters is reported as skipped.
-                let hadContent = fields.contains { field in field.contains { !$0.isWhitespace } }
-                if hadContent { result.skippedRows += 1 }
+                // Commas, quotes or spaces only import nothing. A word made only of invisible
+                // characters is reported as skipped, as Wispr Flow does.
+                if hasInvisible { result.skippedRows += 1 }
                 continue
             }
             guard values.count <= 2 else {
@@ -179,6 +180,7 @@ enum WisprDictionaryCSV {
     }
 
     private static func isInvisible(_ scalar: Unicode.Scalar) -> Bool {
+        if CharacterSet.whitespacesAndNewlines.contains(scalar) { return false }
         switch scalar.value {
         case 0x200B...0x200F, 0x2028...0x202E, 0x2060...0x2064, 0xFEFF, 0x00AD, 0x180E:
             return true
