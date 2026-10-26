@@ -14,6 +14,7 @@ can launch at login.
 | --- | --- | --- |
 | Dictation | Dashboard, History, Stats | Global hotkey, live overlay, per-app history, daily word counts |
 | Dictionary | Dictionary | Corrections (`misspelling → correct spelling`) and custom vocabulary. Imports Wispr Flow CSV files. |
+| Auto Cleanup | AI cleanup | Local Llama 3.2 via Ollama, set up from the Dashboard; or any API key |
 | Style | Styles | Cleanup prompts, assignable per app |
 | Transforms | Edit Mode and Command Mode | Rewrite selected text by voice; run actions on your Mac by voice |
 | Scratchpad | Scratchpad | A persistent note you dictate into when the words have no home yet |
@@ -59,6 +60,36 @@ Because the build is not notarized, macOS forgets the Accessibility grant when
 the app's signature changes. If typing stops working after an update, remove
 Noettic Flow from **System Settings › Privacy & Security › Accessibility** and
 add it again.
+
+## AI cleanup with Ollama, on your Mac
+
+Speech recognition is always local. The Wispr-style cleanup pass (filler words out,
+punctuation and self-corrections applied, numbers as digits) needs a language model,
+and Noettic Flow uses [Ollama](https://ollama.com) running **Llama 3.2 (3B)** on
+your Mac for it. Nothing leaves the machine and there is no subscription.
+
+The Dashboard shows an **AI cleanup** card until a cleanup provider works:
+
+1. **Get Ollama** opens the Ollama download. Install it and open it once; the card
+   notices on its own.
+2. **Download** pulls Llama 3.2 (about 2 GB) with a progress bar.
+3. **Turn on** registers Ollama as the verified dictation provider and enables
+   cleanup. Styles let you tune the prompt per app.
+
+Latency is treated as a feature:
+
+- The model is kept resident. Ollama normally unloads a model after five idle
+  minutes; the app renews it every four, and pre-loads it the moment you press
+  the dictation shortcut, so cleanup never waits on a cold start.
+- Dictations under four words skip the cleanup pass. "Yes", "Sounds good, thanks"
+  are typed as transcribed.
+- Cleanup has a budget of 12 seconds (scaling to a minute for very long
+  dictations). If the model is slower than that, the raw transcript is typed
+  instead of making you wait.
+
+On an M1 with 16 GB the 3B model cleans a typical sentence in well under a
+second. Any other Ollama model, LM Studio, or a cloud key (OpenAI, Anthropic,
+Groq, Gemini) can be selected under AI Providers instead.
 
 ## Bring your Wispr Flow dictionary
 
@@ -128,6 +159,7 @@ Fast checks that need only `swiftc`:
 ```bash
 sh Tests/run_wispr_dictionary_csv_tests.sh
 sh Tests/run_scratchpad_store_tests.sh
+sh Tests/run_local_ai_tests.sh
 sh Tests/run_page_presentation_tests.sh
 ```
 

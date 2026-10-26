@@ -40,6 +40,7 @@ final class AppServices: ObservableObject {
         if !self.isUIReady {
             DebugLogger.shared.info("🚦 UI Ready signal received - services can now initialize", source: "AppServices")
             self.isUIReady = true
+            LocalAIService.shared.startKeepWarm()
         }
         self.refreshFluidMeetAvailability()
     }

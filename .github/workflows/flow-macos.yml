@@ -74,6 +74,7 @@ jobs:
         run: |
           sh Tests/run_wispr_dictionary_csv_tests.sh
           sh Tests/run_scratchpad_store_tests.sh
+          sh Tests/run_local_ai_tests.sh
           sh Tests/run_page_presentation_tests.sh
 
       - name: Build Release (Apple Silicon)
@@ -97,6 +98,18 @@ jobs:
       - name: Ad-hoc sign
         run: |
           APP="build/DerivedData/Build/Products/Release/$APP_NAME.app"
+          # The CTranscribe xcframework ships with a broken Versions/Current link, which makes
+          # codesign call the bundle layout ambiguous. Rebuild the standard framework symlinks
+          # the same way build.sh does before signing anything.
+          FW="$APP/Contents/Frameworks/CTranscribe.framework"
+          if [ -d "$FW" ]; then
+            test -d "$FW/Versions/A" && test -f "$FW/Versions/A/CTranscribe" && test -d "$FW/Versions/A/Resources"
+            rm -rf "$FW/Versions/Current" "$FW/CTranscribe" "$FW/Resources"
+            ln -s A "$FW/Versions/Current"
+            ln -s Versions/Current/CTranscribe "$FW/CTranscribe"
+            ln -s Versions/Current/Resources "$FW/Resources"
+            codesign --force --sign - "$FW"
+          fi
           # Nested helpers and frameworks first, then the outer bundle with its entitlements.
           codesign --force --deep --sign - "$APP"
           codesign --force --sign - --entitlements Fluid.entitlements "$APP"

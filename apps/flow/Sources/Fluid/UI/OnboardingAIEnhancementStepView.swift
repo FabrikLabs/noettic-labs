@@ -214,13 +214,11 @@ struct OnboardingAIEnhancementStepView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             if self.setup.phase == .unavailable {
-                Text("Fluid Intelligence isn't available right now. You can finish setup and try again later.")
+                Text("Fluid Intelligence isn't included in this build. Noettic Flow cleans up dictation with Ollama on your Mac instead; the Dashboard sets it up in a couple of clicks right after this.")
                     .font(self.theme.typography.caption)
                     .foregroundStyle(.white.opacity(0.64))
                     .multilineTextAlignment(.center)
-                Button("Try again") { self.setup.refresh() }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(FluidOnboardingLandingColors.blue)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
         .animation(self.reduceMotion ? nil : .easeInOut(duration: 0.32), value: self.setup.isBusy)

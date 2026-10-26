@@ -2955,6 +2955,8 @@ struct ContentView: View {
             extraParameters: extraParams,
             benchmarkID: benchmarkID
         )
+        // A slow or cold model must not hold the transcript: the caller types the raw text on timeout.
+        config.timeoutSeconds = DictationLatencyPolicy.timeout(forInputCharacters: inputText.count)
         if enableStreaming {
             config.onContentChunk = { chunk in
                 streamHandler?(chunk)
@@ -2977,7 +2979,7 @@ struct ContentView: View {
                     "Streaming dictation post-processing failed; retrying without streaming: \(error.localizedDescription)",
                     source: "ContentView"
                 )
-                let fallbackConfig = LLMClient.Config(
+                var fallbackConfig = LLMClient.Config(
                     messages: messages,
                     model: derivedSelectedModel,
                     baseURL: derivedBaseURL,
@@ -2988,6 +2990,7 @@ struct ContentView: View {
                     extraParameters: extraParams,
                     benchmarkID: benchmarkID
                 )
+                fallbackConfig.timeoutSeconds = DictationLatencyPolicy.timeout(forInputCharacters: inputText.count)
                 response = try await LLMClient.shared.call(fallbackConfig)
             }
         } else {
@@ -3205,10 +3208,12 @@ struct ContentView: View {
 
         let practiceModelID = route == .onboardingSandbox && self.settings.onboardingCurrentStep == 5
             ? PrivateAIProviderPromptFormat.verifiedModelID(settings: self.settings) : nil
-        let shouldUseAI = !sendsExistingDraft && (practiceModelID != nil || (stopSnapshot?.usesAI ?? DictationAIPostProcessingGate.isConfigured(
+        // Very short dictations are typed as transcribed; a rewrite pass only adds latency there.
+        let warrantsAIPass = DictationLatencyPolicy.warrantsAIPass(normalizedTranscribedText)
+        let shouldUseAI = !sendsExistingDraft && (practiceModelID != nil || (warrantsAIPass && (stopSnapshot?.usesAI ?? DictationAIPostProcessingGate.isConfigured(
             for: activeDictationSlot ?? .primary,
             appBundleID: appInfo.bundleId
-        )))
+        ))))
         let transcriptionModelInfo = self.currentTranscriptionModelInfo()
         let postProcessingModelInfo = self.recordDictationUsage(
             shouldUseAI: shouldUseAI,
@@ -4766,6 +4771,8 @@ struct ContentView: View {
     }
 
     private func prewarmPrivateAIDictationIfNeeded(for slot: SettingsStore.DictationShortcutSlot) {
+        // Local Ollama cleanup: start loading the model while the user is still speaking.
+        LocalAIService.shared.prewarmIfActive()
         let appBundleID = self.asr.isRunningOrStarting ? self.recordingAppInfo?.bundleId : DictationAppSession.shared.appID
         self.prewarmDictationTask?.cancel()
         self.prewarmDictationTask = nil

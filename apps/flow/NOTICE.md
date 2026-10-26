@@ -18,6 +18,10 @@ Changes made in this fork:
   JSON format.
 - Wispr-style navigation labels (Dictionary, Styles, Notetaker) and a new
   Scratchpad page for dictating into a persistent in-app note.
+- Local AI cleanup through Ollama: Dashboard card that installs Ollama,
+  downloads Llama 3.2 and configures it as the dictation provider; model
+  keep-warm and prewarm; short dictations skip cleanup; bounded cleanup
+  timeout with raw-text fallback.
 - GitHub Actions build that produces an ad-hoc signed `.app`, `.zip` and
   `.dmg` for Apple Silicon Macs.
 
