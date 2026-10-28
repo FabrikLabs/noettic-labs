@@ -512,7 +512,7 @@ Otter.ai $17"></textarea>
       ? 'It leads ' + cat + ' on AI1000 at ' + score(t.score) + ' out of 100'
       : 'It’s #' + t.catRank + ' of ' + t.catCount + ' in ' + cat + ' on AI1000 at ' + score(t.score) + ' out of 100';
     if (clean(t)) {
-      why = lead + ', the company says it ' + TRAINS[t.tr] + ', and nothing in the category matches its score for the same money or less without training on your data. That’s a seat earned, not a habit.';
+      why = lead + ', the company says it ' + TRAINS[t.tr] + (basis != null ? ', and nothing in the category matches its score for the same money or less without training on your data.' : ', and nothing in the category clears it by five points without training on your data; it has no public price and you didn’t give me one, so I can’t judge the money.') + ' That’s a seat earned, not a habit.';
       if (t.tr === 'optin') why += ' Training is off unless you switched it on, so check that you didn’t.';
     } else {
       why = lead + '. Nothing within three points of it costs the same or less with a clear no-training answer, which matters here, because the company’s pages ' + (t.tr === 'unclear' ? 'aren’t clear about' : 'don’t say') + ' whether it trains on your data. Keep it for now, and read the privacy policy before you renew.';
