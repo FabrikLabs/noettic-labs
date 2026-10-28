@@ -89,15 +89,14 @@ button,input,textarea{font:inherit;color:inherit}
 @media (max-width:480px){.folio .right a{display:none}}
 
 /* lede */
-.lede{padding:clamp(36px,7vw,72px) 0 clamp(24px,4vw,40px)}
+.lede{padding:clamp(26px,7vw,72px) 0 clamp(18px,4vw,40px)}
 h1{
   font-family:var(--sans);font-weight:800;font-stretch:82%;
-  font-size:clamp(2.4rem,7.2vw,4.4rem);line-height:.96;letter-spacing:-.015em;
+  font-size:clamp(2.1rem,7.2vw,4.4rem);line-height:.96;letter-spacing:-.015em;
   margin:0 0 22px;text-wrap:balance;max-width:16ch;
 }
 h1 em{font-style:normal;color:var(--blue)}
 .lede p{margin:0;max-width:var(--measure);font-size:1.08rem;line-height:1.5}
-.lede p+p{margin-top:12px}
 
 /* form */
 .form{border-top:1px solid var(--rule);padding-top:18px}
@@ -106,7 +105,7 @@ h1 em{font-style:normal;color:var(--blue)}
   letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin:0 0 10px;
 }
 textarea{
-  display:block;width:100%;min-height:208px;resize:vertical;
+  display:block;width:100%;min-height:208px;max-height:60vh;resize:vertical;field-sizing:content;
   padding:14px 16px;border:1px solid var(--rule);border-radius:2px;background:var(--field);
   font-family:var(--sans);font-size:1.05rem;line-height:32px;tab-size:4;
   background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,var(--rule-soft) 31px,var(--rule-soft) 32px);
@@ -211,7 +210,7 @@ textarea:focus{outline:2px solid var(--blue);outline-offset:0;border-color:var(-
 
 /* budget */
 .total{
-  margin-top:28px;padding-top:16px;border-top:3px solid var(--rule);
+  margin-top:clamp(44px,6vw,64px);padding-top:16px;border-top:3px solid var(--rule);
   display:flex;justify-content:space-between;align-items:flex-start;gap:12px 32px;
 }
 .total .tt{min-width:0;flex:1 1 auto}
@@ -228,8 +227,8 @@ textarea:focus{outline:2px solid var(--blue);outline-offset:0;border-color:var(-
 .total p+p{margin-top:8px}
 .total.quiet .sum{display:none}
 @media (max-width:640px){
-  .total{flex-direction:column-reverse;align-items:stretch}
-  .total .sum{text-align:left;margin:0 0 4px}
+  .total{flex-direction:column;align-items:stretch}
+  .total .sum{text-align:left;margin:8px 0 0}
   .sheet-h{flex-direction:column;align-items:flex-start;gap:4px}
 }
 
@@ -273,7 +272,6 @@ textarea:focus{outline:2px solid var(--blue);outline-offset:0;border-color:var(-
     <section class="lede">
       <h1>Which of your AI tools <em>earn their seat?</em></h1>
       <p>Paste the ones you pay for, one per line. I check each against the <a href="https://ai1000.co">AI1000 directory</a>, which ranks 1,000 AI tools on what they cost and what they do with your data, and I tell you to keep it, cancel it, or replace it, in plain words.</p>
-      <p>Everything runs in your browser. Your list never leaves it.</p>
     </section>
 
     <form class="form" id="form" novalidate>
@@ -284,7 +282,7 @@ Notion
 Otter.ai $17"></textarea>
       <div class="form-foot">
         <button class="btn" id="go" type="submit">Audit my stack</button>
-        <p class="hint">Prices are optional. Put what you pay each month on the same line, like <b>Notion 10</b>, and I'll total what's draining your budget.</p>
+        <p class="hint">Prices are optional. Put what you pay each month on the same line, like <b>Notion 10</b>, and I'll total what's draining your budget. Everything runs in your browser; your list never leaves it.</p>
       </div>
       <p class="status" id="status" aria-live="polite"><span class="dot" aria-hidden="true"></span><span id="status-text">Reaching the AI1000 directory…</span></p>
       <p class="form-error" id="form-error" hidden></p>
@@ -486,7 +484,7 @@ Otter.ai $17"></textarea>
 
     if (t.tr === 'trains') {
       alt = bestAlt(t, basis, matched, { minScore: t.score - 3, cheaper: false });
-      why = t.name + ' trains on your data by default. That comes from the company’s own page, as recorded on AI1000, and an opt-out buried in settings doesn’t change my answer.';
+      why = t.name + ' trains on your data by default. That comes from the company’s own page, as recorded on AI1000, and “by default” is the part that decides it: I don’t give credit for a setting you would have to go and find, if there is one.';
       if (alt) why += ' If you still need ' + an(cat) + ' tool, ' + alt.name + ' scores ' + score(alt.score) + ' to its ' + score(t.score) + ' and ' + TRAINS[alt.tr] + '.';
       return { v: 'cancel', why: why };
     }
@@ -500,15 +498,7 @@ Otter.ai $17"></textarea>
         (m.tool.score === t.score && mb === basis && j < idx);
       if (beats && (!winner || m.tool.score > winner.tool.score)) winner = m;
     });
-    if (winner) {
-      var w = winner.tool, wb = basisOf(winner);
-      why = 'Two of your tools do the same job (' + cat + '). ';
-      if (w.score > t.score) why += w.name + ' scores ' + score(w.score) + ' on AI1000 to ' + t.name + '’s ' + score(t.score);
-      else why += w.name + ' matches it at ' + score(t.score) + ' on AI1000';
-      if (wb != null && basis != null && wb < basis) why += ' and costs ' + money(wb, winner.cur || '$') + ' to this one’s ' + money(basis, e.cur);
-      why += ', so this is the duplicate. Keep ' + w.name + ' and cut this one.';
-      return { v: 'cancel', why: why };
-    }
+    if (winner) return { v: 'cancel', dup: winner, why: '' };
 
     alt = bestAlt(t, basis, matched, { minScore: t.score, cheaper: true });
     if (alt) return { v: 'replace', alt: alt, why: swapWhy(e, alt, basis, cat, false) };
@@ -522,14 +512,27 @@ Otter.ai $17"></textarea>
       ? 'It leads ' + cat + ' on AI1000 at ' + score(t.score) + ' out of 100'
       : 'It’s #' + t.catRank + ' of ' + t.catCount + ' in ' + cat + ' on AI1000 at ' + score(t.score) + ' out of 100';
     if (clean(t)) {
-      why = lead + ', the company says it ' + TRAINS[t.tr] + ', and nothing in the category beats it on both price and policy. That’s a seat earned, not a habit.';
+      why = lead + ', the company says it ' + TRAINS[t.tr] + ', and nothing in the category matches its score for the same money or less without training on your data. That’s a seat earned, not a habit.';
       if (t.tr === 'optin') why += ' Training is off unless you switched it on, so check that you didn’t.';
     } else {
-      why = lead + ' and nothing in the category beats it on price, but the company’s pages ' + (t.tr === 'unclear' ? 'aren’t clear about' : 'don’t say') + ' whether it trains on your data. Keep it for now, and read the privacy policy before you renew.';
+      why = lead + '. Nothing within three points of it costs the same or less with a clear no-training answer, which matters here, because the company’s pages ' + (t.tr === 'unclear' ? 'aren’t clear about' : 'don’t say') + ' whether it trains on your data. Keep it for now, and read the privacy policy before you renew.';
     }
     var lp = listPrice(t);
     if (e.price != null && lp != null && t.per != null && e.price > lp * 1.15) why += ' You said ' + money(e.price, e.cur) + '; AI1000 lists ' + money(lp, '$') + ' a seat a month, so check which plan you’re on.';
     return { v: 'keep', why: why };
+  }
+  function dupWhy(e, winner) {
+    var t = e.tool, w = winner.tool, wb = basisOf(winner), basis = basisOf(e), cat = lc(t.cat);
+    var s = 'Two of your tools do the same job (' + cat + '). ';
+    if (w.score > t.score) s += w.name + ' scores ' + score(w.score) + ' on AI1000 to ' + t.name + '’s ' + score(t.score);
+    else s += w.name + ' matches it at ' + score(t.score) + ' on AI1000';
+    if (wb != null && basis != null && wb < basis) s += ' and costs ' + money(wb, winner.cur || '$') + ' to this one’s ' + money(basis, e.cur);
+    if (winner.verdict && winner.verdict.v === 'replace' && winner.verdict.alt) {
+      s += ', and ' + winner.verdict.alt.name + ' covers the same job if you take that swap. Either way this one is the duplicate. Cut it.';
+    } else {
+      s += ', so this is the duplicate. Keep ' + w.name + ' and cut this one.';
+    }
+    return s;
   }
   function swapWhy(e, alt, basis, cat, policy) {
     var t = e.tool, lp = listPrice(alt), s;
@@ -657,7 +660,9 @@ Otter.ai $17"></textarea>
     });
     var matched = entries.filter(function (e) { return e.kind === 'ok'; });
     matched.forEach(function (e, i) { e.verdict = judge(e, i, matched); });
+    matched.forEach(function (e) { if (e.verdict.dup) e.verdict.why = dupWhy(e, e.verdict.dup); });
 
+    grow();
     sheet.innerHTML = entries.map(rowHtml).join('');
     var known = matched.length, counts = { keep: 0, cancel: 0, replace: 0 };
     matched.forEach(function (e) { counts[e.verdict.v]++; });
@@ -676,6 +681,13 @@ Otter.ai $17"></textarea>
       formError.textContent = 'I can’t judge anything until the directory loads. Try again in a moment.'; formError.hidden = false;
     }).then(function () { btn.disabled = false; btn.textContent = 'Audit my stack'; });
   });
+  var ta = $('tools');
+  function grow() {
+    if (CSS.supports && CSS.supports('field-sizing', 'content')) return;
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight + 2, window.innerHeight * 0.6) + 'px';
+  }
+  ta.addEventListener('input', grow);
   $('tools').addEventListener('keydown', function (ev) {
     if ((ev.metaKey || ev.ctrlKey) && ev.key === 'Enter') { ev.preventDefault(); $('go').click(); }
   });
