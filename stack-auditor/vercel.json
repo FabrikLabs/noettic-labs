@@ -1,0 +1,14 @@
+{
+  "rewrites": [
+    { "source": "/stack-data.json", "destination": "https://ai1000.co/stack-data.json" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ]
+}

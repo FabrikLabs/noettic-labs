@@ -50,3 +50,6 @@ coverage/
 # Misc
 .cache/
 .turbo/
+
+# Impeccable review captures (regenerated per run)
+stack-auditor/.impeccable/review/

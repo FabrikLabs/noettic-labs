@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stack Auditor · Building From Zero</title>
+<meta name="description" content="Paste the AI tools you pay for. I check each one against the AI1000 directory and say keep, cancel, or replace, in plain words.">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFFFFF">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0A0A0A">
+<meta property="og:title" content="Stack Auditor">
+<meta property="og:description" content="Which of your AI subscriptions earn their seat? Paste the list and find out.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230030E0'/%3E%3Cpath d='M8 17l5 5 11-12' fill='none' stroke='%23fff' stroke-width='3.5' stroke-linecap='square'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,75..125,400..800;1,75..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400..600&display=swap">
+<style>
+:root{
+  --paper:#FFFFFF;
+  --ink:#0B0B0B;
+  --ink-2:color-mix(in srgb,var(--ink) 66%,var(--paper));
+  --ink-3:color-mix(in srgb,var(--ink) 58%,var(--paper));
+  --rule:var(--ink);
+  --rule-soft:color-mix(in srgb,var(--ink) 22%,var(--paper));
+  --field:color-mix(in srgb,var(--ink) 3%,var(--paper));
+  --blue:#0030E0;
+  --on-blue:#FFFFFF;
+  --sans:"Archivo",system-ui,"Helvetica Neue",Arial,sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --measure:66ch;
+  --gutter:clamp(16px,4vw,40px);
+  --ease:cubic-bezier(.16,1,.3,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A0A0A;
+    --ink:#F4F4F1;
+    --blue:#5B86FF;
+    --on-blue:#0A0A0A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A0A0A;
+  --ink:#F4F4F1;
+  --blue:#5B86FF;
+  --on-blue:#0A0A0A;
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--serif);font-size:17px;line-height:1.55;
+  font-optical-sizing:auto;-webkit-font-smoothing:antialiased;
+  caret-color:var(--blue);
+}
+::selection{background:var(--blue);color:var(--on-blue)}
+a{color:var(--blue);text-decoration-thickness:1px;text-underline-offset:.16em;text-decoration-color:color-mix(in srgb,var(--blue) 55%,transparent)}
+a:hover{text-decoration-color:var(--blue)}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+button,input,textarea{font:inherit;color:inherit}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-200vw;top:8px;background:var(--ink);color:var(--paper);padding:8px 12px;font-family:var(--sans);font-weight:600;z-index:10}
+.skip:focus{left:8px}
+
+.wrap{max-width:820px;margin:0 auto;padding:0 var(--gutter)}
+
+/* folio */
+.folio{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 14px;border-bottom:1px solid var(--rule);
+  font-family:var(--sans);font-size:.82rem;letter-spacing:.02em;
+}
+.folio .name{font-weight:700;font-stretch:90%;font-size:.95rem;letter-spacing:0;text-transform:uppercase}
+.folio .right{display:flex;align-items:center;gap:18px}
+.folio .right a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule-soft)}
+.folio .right a:hover{border-bottom-color:var(--ink)}
+.theme{
+  appearance:none;background:none;border:1px solid var(--rule);border-radius:2px;
+  padding:5px 9px;cursor:pointer;font-family:var(--sans);font-size:.74rem;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;line-height:1;min-height:28px;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.theme:hover{background:var(--ink);color:var(--paper)}
+.theme svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:480px){.folio .right a{display:none}}
+
+/* lede */
+.lede{padding:clamp(36px,7vw,72px) 0 clamp(24px,4vw,40px)}
+h1{
+  font-family:var(--sans);font-weight:800;font-stretch:82%;
+  font-size:clamp(2.4rem,7.2vw,4.4rem);line-height:.96;letter-spacing:-.015em;
+  margin:0 0 22px;text-wrap:balance;max-width:16ch;
+}
+h1 em{font-style:normal;color:var(--blue)}
+.lede p{margin:0;max-width:var(--measure);font-size:1.08rem;line-height:1.5}
+.lede p+p{margin-top:12px}
+
+/* form */
+.form{border-top:1px solid var(--rule);padding-top:18px}
+.form label{
+  display:block;font-family:var(--sans);font-weight:600;font-size:.8rem;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin:0 0 10px;
+}
+textarea{
+  display:block;width:100%;min-height:208px;resize:vertical;
+  padding:14px 16px;border:1px solid var(--rule);border-radius:2px;background:var(--field);
+  font-family:var(--sans);font-size:1.05rem;line-height:32px;tab-size:4;
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,var(--rule-soft) 31px,var(--rule-soft) 32px);
+  background-attachment:local;background-position:0 14px;
+  font-variant-numeric:tabular-nums;
+}
+textarea::placeholder{color:var(--ink-2)}
+textarea:focus{outline:2px solid var(--blue);outline-offset:0;border-color:var(--blue)}
+.form-foot{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  margin-top:14px;
+}
+.btn{
+  appearance:none;border:0;border-radius:2px;background:var(--blue);color:var(--on-blue);
+  font-family:var(--sans);font-weight:700;font-size:.98rem;letter-spacing:.01em;
+  padding:14px 22px;min-height:48px;cursor:pointer;
+  transition:transform .15s var(--ease),filter .15s ease;
+}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{cursor:progress;opacity:.72}
+.hint{
+  margin:0;font-family:var(--sans);font-size:.82rem;line-height:1.45;color:var(--ink-2);max-width:40ch;
+}
+.hint b{color:var(--ink);font-weight:600}
+.status{
+  margin:10px 0 0;font-family:var(--sans);font-size:.78rem;color:var(--ink-3);font-variant-numeric:tabular-nums;
+  display:flex;align-items:center;gap:8px;min-height:20px;
+}
+.status .dot{width:7px;height:7px;border-radius:50%;background:var(--ink-3);flex:none}
+.status.ok .dot{background:var(--blue)}
+.status.bad{color:var(--ink)}
+.status.bad .dot{background:var(--ink)}
+.status button{appearance:none;background:none;border:0;padding:0;color:var(--blue);text-decoration:underline;cursor:pointer;font-size:inherit}
+.form-error{
+  margin:12px 0 0;font-family:var(--sans);font-size:.9rem;color:var(--ink);
+  border-left:1px solid var(--ink);padding-left:10px;
+}
+
+/* results */
+.results{margin-top:clamp(40px,7vw,72px)}
+.results[hidden]{display:none}
+.sheet-h{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  border-bottom:2px solid var(--rule);padding-bottom:8px;margin-bottom:0;
+  font-family:var(--sans);
+}
+.sheet-h h2{margin:0;font-weight:800;font-stretch:85%;font-size:1.5rem;letter-spacing:-.01em;text-transform:uppercase}
+.sheet-h span{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.sheet{list-style:none;margin:0;padding:0}
+.row{
+  display:grid;grid-template-columns:9.5rem minmax(0,1fr) auto;gap:6px 20px;
+  padding:18px 0 20px;border-bottom:1px solid var(--rule-soft);
+  animation:rise .42s var(--ease) both;animation-delay:calc(var(--i,0) * 70ms);
+}
+.row:last-child{border-bottom:1px solid var(--rule)}
+.v{
+  font-family:var(--sans);font-weight:800;font-stretch:78%;text-transform:uppercase;
+  font-size:1.9rem;line-height:1;letter-spacing:-.005em;padding-top:2px;color:var(--ink);
+}
+.row.keep .v{color:var(--blue)}
+.row.replace .v,.row.cancel .v{color:var(--ink)}
+.row.none .v{color:var(--ink-3);font-size:1.15rem;font-weight:700;padding-top:7px;font-stretch:85%}
+.v small{display:block;font-size:.66rem;font-weight:600;letter-spacing:.1em;color:var(--ink-3);margin-top:5px;font-stretch:100%}
+.who{min-width:0}
+.who h3{
+  margin:0;font-family:var(--sans);font-weight:700;font-size:1.25rem;line-height:1.2;letter-spacing:-.005em;
+  display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;
+}
+.who h3 .nm{position:relative;display:inline-block}
+.row.cancel .who h3 .nm::after{
+  content:"";position:absolute;left:-2px;right:-2px;top:52%;height:2px;background:var(--ink);
+  transform:scaleX(0);transform-origin:left center;
+  animation:strike .5s var(--ease) forwards;animation-delay:calc(var(--i,0) * 70ms + .38s);
+}
+.who h3 .arrow{display:inline-flex;align-items:center;color:var(--ink-2)}
+.who h3 .arrow svg{width:26px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.who h3 .alt{color:var(--blue)}
+.meta{
+  margin:6px 0 0;font-family:var(--sans);font-size:.78rem;line-height:1.5;color:var(--ink-2);
+  font-variant-numeric:tabular-nums;
+}
+.meta span+span::before{content:"·";margin:0 .5em;color:var(--ink-3)}
+.why{margin:10px 0 0;max-width:var(--measure);font-size:1.02rem}
+.why a{white-space:nowrap}
+.checks{margin:8px 0 0;padding-left:1.15em;max-width:var(--measure)}
+.checks li{margin:4px 0}
+.src{margin:8px 0 0;font-family:var(--sans);font-size:.78rem}
+.paid{
+  font-family:var(--sans);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;
+  font-weight:600;font-size:1rem;line-height:1.2;padding-top:4px;
+}
+.paid small{display:block;font-weight:500;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-top:3px}
+.paid.none{font-weight:500;color:var(--ink-3)}
+@media (max-width:640px){
+  .row{grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;padding:16px 0 18px}
+  .v{grid-column:1 / -1;font-size:1.55rem;margin-bottom:4px}
+  .row.none .v{font-size:1rem;padding-top:0}
+  .who{grid-column:1}
+  .paid{grid-column:2;grid-row:2}
+}
+
+/* budget */
+.total{
+  margin-top:28px;padding-top:16px;border-top:3px solid var(--rule);
+  display:flex;justify-content:space-between;align-items:flex-start;gap:12px 32px;
+}
+.total .tt{min-width:0;flex:1 1 auto}
+.total h2+p{margin-top:8px}
+.total h2{
+  margin:0;font-family:var(--sans);font-weight:800;font-stretch:85%;font-size:1.2rem;letter-spacing:-.005em;text-transform:uppercase;
+}
+.total .sum{
+  font-family:var(--sans);font-weight:800;font-stretch:82%;font-size:clamp(2rem,6vw,3rem);line-height:1;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;text-align:right;flex:none;
+}
+.total .sum small{display:block;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-top:6px;font-stretch:100%}
+.total p{margin:0;max-width:var(--measure);font-size:1.02rem}
+.total p+p{margin-top:8px}
+.total.quiet .sum{display:none}
+@media (max-width:640px){
+  .total{flex-direction:column-reverse;align-items:stretch}
+  .total .sum{text-align:left;margin:0 0 4px}
+  .sheet-h{flex-direction:column;align-items:flex-start;gap:4px}
+}
+
+/* close */
+.close{margin-top:clamp(40px,7vw,64px);padding:20px 0 56px;border-top:1px solid var(--rule)}
+.disclaimer{margin:0;font-family:var(--sans);font-size:.8rem;color:var(--ink-2);line-height:1.5}
+.news{margin:18px 0 0;font-size:1.05rem}
+.news a{font-weight:500}
+.again{appearance:none;background:none;border:0;padding:0;margin:0 0 0 14px;color:var(--ink-2);font-family:var(--sans);font-size:.8rem;text-decoration:underline;cursor:pointer}
+
+/* motion */
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes strike{to{transform:scaleX(1)}}
+@media (prefers-reduced-motion:reduce){
+  .row{animation:none}
+  .row.cancel .who h3 .nm::after{animation:none;transform:scaleX(1)}
+  .btn{transition:none}
+}
+@media print{
+  .theme,.btn,.again,.status{display:none}
+  textarea{background-image:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#tools">Skip to the form</a>
+
+<div class="wrap">
+  <header class="folio">
+    <span class="name">Stack Auditor</span>
+    <div class="right">
+      <a href="https://buildingfromzero.co">Building From Zero</a>
+      <button class="theme" id="theme" type="button" aria-pressed="false">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5"/><path d="M8 2.5v11"/><path d="M8 2.5a5.5 5.5 0 0 1 0 11" fill="currentColor" stroke="none"/></svg>
+        <span id="theme-label">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="lede">
+      <h1>Which of your AI tools <em>earn their seat?</em></h1>
+      <p>Paste the ones you pay for, one per line. I check each against the <a href="https://ai1000.co">AI1000 directory</a>, which ranks 1,000 AI tools on what they cost and what they do with your data, and I tell you to keep it, cancel it, or replace it, in plain words.</p>
+      <p>Everything runs in your browser. Your list never leaves it.</p>
+    </section>
+
+    <form class="form" id="form" novalidate>
+      <label for="tools">Your tools, one per line</label>
+      <textarea id="tools" name="tools" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="ChatGPT 20
+Granola 14
+Notion
+Otter.ai $17"></textarea>
+      <div class="form-foot">
+        <button class="btn" id="go" type="submit">Audit my stack</button>
+        <p class="hint">Prices are optional. Put what you pay each month on the same line, like <b>Notion 10</b>, and I'll total what's draining your budget.</p>
+      </div>
+      <p class="status" id="status" aria-live="polite"><span class="dot" aria-hidden="true"></span><span id="status-text">Reaching the AI1000 directory…</span></p>
+      <p class="form-error" id="form-error" hidden></p>
+    </form>
+
+    <section class="results" id="results" hidden aria-labelledby="results-h">
+      <div class="sheet-h">
+        <h2 id="results-h">The verdicts</h2>
+        <span id="results-count"></span>
+      </div>
+      <ol class="sheet" id="sheet"></ol>
+
+      <div class="total" id="total"></div>
+    </section>
+  </main>
+
+  <footer class="close">
+    <p class="disclaimer">Verdicts are my editorial judgment based on the AI1000 directory, not financial advice.</p>
+    <p class="news"><a href="https://buildingfromzero.co">Get the full reasoning in my newsletter</a><button class="again" id="again" type="button" hidden>Start over</button></p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var DIRECT = 'https://ai1000.co/stack-data.json';
+  var LOCAL = 'stack-data.json';
+  var SITE = 'https://ai1000.co/';
+
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  /* ---------- theme ---------- */
+  var root = document.documentElement, themeBtn = $('theme'), themeLabel = $('theme-label');
+  function stored(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function keep(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function effectiveTheme() {
+    var t = root.getAttribute('data-theme');
+    if (t) return t;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  function paintTheme() {
+    var dark = effectiveTheme() === 'dark';
+    themeLabel.textContent = dark ? 'Light' : 'Dark';
+    themeBtn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    themeBtn.setAttribute('aria-pressed', String(dark));
+  }
+  var saved = stored('bfz-theme');
+  if (saved === 'dark' || saved === 'light') root.setAttribute('data-theme', saved);
+  themeBtn.addEventListener('click', function () {
+    var next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next); keep('bfz-theme', next); paintTheme();
+  });
+  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', paintTheme);
+  paintTheme();
+
+  /* ---------- directory ---------- */
+  var TRAINS = {
+    notrain: "doesn't train on your data",
+    optin: 'trains only if you opt in',
+    trains: 'trains on your data by default',
+    unclear: "isn't clear about whether it trains on your data",
+    unknown: "doesn't say whether it trains on your data"
+  };
+  var TRAINS_LABEL = {
+    notrain: "Doesn't train on your data",
+    optin: 'Trains only if you opt in',
+    trains: 'Trains on your data by default',
+    unclear: "Their pages aren't clear on training",
+    unknown: "Their pages don't say if they train"
+  };
+  var DATA = null, LIST = [], CATS = {}, updated = null, loading = null;
+  var statusEl = $('status'), statusText = $('status-text');
+
+  function norm(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, ''); }
+  function setStatus(kind, html) {
+    statusEl.className = 'status' + (kind ? ' ' + kind : '');
+    statusText.innerHTML = html;
+  }
+  function fetchJson(url) {
+    return fetch(url, { cache: 'no-cache' }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      var lm = r.headers.get('last-modified');
+      return r.json().then(function (j) { return { json: j, lastModified: lm }; });
+    });
+  }
+  function load() {
+    if (loading) return loading;
+    setStatus('', 'Reaching the AI1000 directory…');
+    loading = fetchJson(DIRECT).catch(function () { return fetchJson(LOCAL); }).then(function (res) {
+      DATA = res.json;
+      updated = res.lastModified ? new Date(res.lastModified) : null;
+      LIST = Object.keys(DATA).map(function (slug) {
+        var d = DATA[slug];
+        return { slug: slug, name: d[0], cat: d[1], score: d[2], rank: d[3], per: d[4], flat: d[5], aud: d[6], sales: d[7], tr: d[8] || 'unknown', norm: norm(d[0]), nslug: norm(slug) };
+      });
+      CATS = {};
+      LIST.forEach(function (t) { (CATS[t.cat] = CATS[t.cat] || []).push(t); });
+      Object.keys(CATS).forEach(function (c) {
+        CATS[c].sort(function (a, b) { return b.score - a.score || a.rank - b.rank; });
+        CATS[c].forEach(function (t, i) { t.catRank = i + 1; t.catCount = CATS[c].length; });
+      });
+      var when = updated ? ', data updated ' + updated.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      setStatus('ok', 'Judging against ' + LIST.length.toLocaleString('en-US') + ' tools on AI1000' + when + '.');
+      return LIST;
+    }, function (err) {
+      loading = null;
+      setStatus('bad', "I couldn't reach the AI1000 directory, so I can't judge anything yet. <button type=\"button\" id=\"retry\">Try again</button>");
+      $('retry').addEventListener('click', function () { load(); });
+      throw err;
+    });
+    return loading;
+  }
+  load().catch(function () {});
+
+  /* ---------- parsing ---------- */
+  var PLAN = /\b(plus|pro|team|teams|business|enterprise|premium|max|free|personal|individual|starter|basic|standard|subscription|plan|monthly|yearly|annual|seat|seats|license|licence|the)\b/g;
+  var PRICE = /(?:^|[\s,:;|()\-–—])(?:(\$|£|€|usd|gbp|eur)\s*)?(\d+(?:[.,]\d{1,2})?)\s*(\$|£|€|usd|gbp|eur)?\s*(?:\/\s*|per\s+|a\s+|an\s+|each\s+)?(mo|month|monthly|mth|m|yr|year|yearly|annually|annual|y)?\.?\)?\s*$/i;
+  var SYM = { usd: '$', gbp: '£', eur: '€' };
+
+  function cleanName(s) {
+    return s.replace(/\.(ai|com|io|co|app)\b/gi, ' ').replace(/[–—\-:,|()]+\s*$/g, '').trim();
+  }
+  function parseLine(line) {
+    var raw = line.trim();
+    if (!raw) return null;
+    var price = null, cur = '$', name = raw, m = raw.match(PRICE);
+    if (m) {
+      var n = parseFloat(m[2].replace(',', '.'));
+      var sym = m[1] || m[3];
+      if (sym) cur = SYM[sym.toLowerCase()] || sym;
+      var unit = (m[4] || '').toLowerCase();
+      if (/^(yr|year|yearly|annually|annual|y)$/.test(unit)) n = n / 12;
+      var before = cleanName(raw.slice(0, m.index + (m[0].length - m[0].replace(/^[\s,:;|()\-–—]+/, '').length)));
+      if (before && !isNaN(n)) { price = n; name = before; }
+    }
+    return { raw: raw, name: cleanName(name), fullName: cleanName(raw), price: price, cur: cur };
+  }
+  function lookup(name) {
+    var q = norm(name.replace(PLAN, ' '));
+    if (q.length < 2) q = norm(name);
+    if (!q) return { kind: 'none' };
+    var exact = LIST.filter(function (t) { return t.norm === q || t.nslug === q; });
+    if (exact.length === 1) return { kind: 'ok', tool: exact[0] };
+    if (exact.length > 1) return { kind: 'many', tools: exact };
+    if (q.length < 3) return { kind: 'none' };
+    var inside = LIST.filter(function (t) { return t.norm.length >= 4 && q.indexOf(t.norm) > -1; });
+    if (inside.length) {
+      inside.sort(function (a, b) { return b.norm.length - a.norm.length || a.rank - b.rank; });
+      var top = inside.filter(function (t) { return t.norm.length === inside[0].norm.length; });
+      if (top.length === 1) return { kind: 'ok', tool: top[0] };
+      return { kind: 'many', tools: top };
+    }
+    var starts = LIST.filter(function (t) { return t.norm.indexOf(q) === 0; });
+    if (starts.length === 1) return { kind: 'ok', tool: starts[0] };
+    if (starts.length > 1) return { kind: 'many', tools: starts.slice(0, 4) };
+    var within = LIST.filter(function (t) { return t.norm.indexOf(q) > -1; });
+    if (within.length === 1) return { kind: 'ok', tool: within[0] };
+    if (within.length > 1 && within.length <= 4) return { kind: 'many', tools: within };
+    return { kind: 'none' };
+  }
+
+  /* ---------- judgement ---------- */
+  function listPrice(t) { if (t.per != null) return t.per; if (t.flat != null) return t.flat; return null; }
+  function priceWords(t) {
+    if (t.per != null) return money(t.per, '$') + ' a seat a month';
+    if (t.flat != null) return money(t.flat, '$') + ' a month' + (t.aud === 'team' ? ' for the team' : '');
+    return t.sales ? 'sales-only pricing' : 'no public price';
+  }
+  function money(n, cur) {
+    var v = Math.round(n * 100) / 100, whole = Number.isInteger(v);
+    return (cur || '$') + v.toLocaleString('en-US', { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: 2 });
+  }
+  function an(s) { return (/^[aeiou]/i.test(s) ? 'an ' : 'a ') + s; }
+  function score(n) { return Number.isInteger(n) ? String(n) : n.toFixed(1); }
+  function lc(s) { return s.replace(/\bAI\b/g, 'AI').replace(/\b([A-Z])(?=[a-z])/g, function (c) { return c.toLowerCase(); }); }
+  function basisOf(e) { return e.price != null ? e.price : listPrice(e.tool); }
+  function clean(t) { return t.tr === 'notrain' || t.tr === 'optin'; }
+
+  function bestAlt(t, basis, matched, o) {
+    var best = null;
+    (CATS[t.cat] || []).forEach(function (c) {
+      if (c === t || !clean(c)) return;
+      if (matched.some(function (m) { return m.tool === c; })) return;
+      if (c.score < o.minScore) return;
+      var lp = listPrice(c);
+      if (o.cheaper) {
+        if (lp == null) return;
+        if (basis != null) { if (lp > basis) return; }
+        else if (c.score < t.score + 5) return;
+      }
+      if (!best || c.score > best.score || (c.score === best.score && (lp != null ? lp : Infinity) < (listPrice(best) != null ? listPrice(best) : Infinity))) best = c;
+    });
+    return best;
+  }
+
+  function judge(e, idx, matched) {
+    var t = e.tool, basis = basisOf(e), cat = lc(t.cat), alt, why;
+
+    if (t.tr === 'trains') {
+      alt = bestAlt(t, basis, matched, { minScore: t.score - 3, cheaper: false });
+      why = t.name + ' trains on your data by default. That comes from the company’s own page, as recorded on AI1000, and an opt-out buried in settings doesn’t change my answer.';
+      if (alt) why += ' If you still need ' + an(cat) + ' tool, ' + alt.name + ' scores ' + score(alt.score) + ' to its ' + score(t.score) + ' and ' + TRAINS[alt.tr] + '.';
+      return { v: 'cancel', why: why };
+    }
+
+    var winner = null;
+    matched.forEach(function (m, j) {
+      if (m === e || m.tool.cat !== t.cat || m.tool.tr === 'trains') return;
+      var mb = basisOf(m);
+      var beats = m.tool.score > t.score ||
+        (m.tool.score === t.score && (mb != null ? mb : Infinity) < (basis != null ? basis : Infinity)) ||
+        (m.tool.score === t.score && mb === basis && j < idx);
+      if (beats && (!winner || m.tool.score > winner.tool.score)) winner = m;
+    });
+    if (winner) {
+      var w = winner.tool, wb = basisOf(winner);
+      why = 'Two of your tools do the same job (' + cat + '). ';
+      if (w.score > t.score) why += w.name + ' scores ' + score(w.score) + ' on AI1000 to ' + t.name + '’s ' + score(t.score);
+      else why += w.name + ' matches it at ' + score(t.score) + ' on AI1000';
+      if (wb != null && basis != null && wb < basis) why += ' and costs ' + money(wb, winner.cur || '$') + ' to this one’s ' + money(basis, e.cur);
+      why += ', so this is the duplicate. Keep ' + w.name + ' and cut this one.';
+      return { v: 'cancel', why: why };
+    }
+
+    alt = bestAlt(t, basis, matched, { minScore: t.score, cheaper: true });
+    if (alt) return { v: 'replace', alt: alt, why: swapWhy(e, alt, basis, cat, false) };
+
+    if (!clean(t)) {
+      alt = bestAlt(t, basis, matched, { minScore: t.score - 3, cheaper: true });
+      if (alt) return { v: 'replace', alt: alt, why: swapWhy(e, alt, basis, cat, true) };
+    }
+
+    var lead = t.catRank === 1
+      ? 'It leads ' + cat + ' on AI1000 at ' + score(t.score) + ' out of 100'
+      : 'It’s #' + t.catRank + ' of ' + t.catCount + ' in ' + cat + ' on AI1000 at ' + score(t.score) + ' out of 100';
+    if (clean(t)) {
+      why = lead + ', the company says it ' + TRAINS[t.tr] + ', and nothing in the category beats it on both price and policy. That’s a seat earned, not a habit.';
+      if (t.tr === 'optin') why += ' Training is off unless you switched it on, so check that you didn’t.';
+    } else {
+      why = lead + ' and nothing in the category beats it on price, but the company’s pages ' + (t.tr === 'unclear' ? 'aren’t clear about' : 'don’t say') + ' whether it trains on your data. Keep it for now, and read the privacy policy before you renew.';
+    }
+    var lp = listPrice(t);
+    if (e.price != null && lp != null && t.per != null && e.price > lp * 1.15) why += ' You said ' + money(e.price, e.cur) + '; AI1000 lists ' + money(lp, '$') + ' a seat a month, so check which plan you’re on.';
+    return { v: 'keep', why: why };
+  }
+  function swapWhy(e, alt, basis, cat, policy) {
+    var t = e.tool, lp = listPrice(alt), s;
+    var altPrice = alt.per != null ? money(lp, '$') + ' a seat a month' : money(lp, '$') + ' a month';
+    var yours = e.price != null ? 'the ' + money(e.price, e.cur) + ' you’re paying' : (listPrice(t) != null ? t.name + '’s listed ' + money(listPrice(t), '$') : null);
+    if (policy) {
+      s = t.name + ' ' + TRAINS[t.tr] + ', and I don’t give a pass for silence. ' + alt.name + ' does the same job, ';
+      s += alt.score >= t.score ? 'scores ' + score(alt.score) + ' to its ' + score(t.score) : 'is within three points (' + score(alt.score) + ' to ' + score(t.score) + ')';
+      s += yours ? ', costs ' + altPrice + ' against ' + yours : ', costs ' + altPrice;
+      s += ', and ' + TRAINS[alt.tr] + '.';
+      return s;
+    }
+    s = alt.name + ' does the same job (' + cat + ')';
+    if (yours) s += ' for ' + altPrice + ' against ' + yours;
+    else s += ' at ' + altPrice + ', while ' + t.name + ' has no public price';
+    s += alt.score > t.score ? ', scores ' + score(alt.score) + ' to ' + t.name + '’s ' + score(t.score) : ', matches its score at ' + score(t.score);
+    s += ', and ' + TRAINS[alt.tr] + '.';
+    s += yours ? ' Swap and keep the difference.' : ' You know what you pay; I don’t.';
+    return s;
+  }
+
+  var CHECKS = [
+    'Whether it trains on your data by default, or only if you opt in. “We may use your content to improve our services” means yes.',
+    'How long it keeps what you upload, and whether you can delete it yourself.',
+    'Who else sees it: which AI providers and subprocessors get your data, and whether they can train on it.'
+  ];
+
+  /* ---------- render ---------- */
+  var sheet = $('sheet'), results = $('results'), totalEl = $('total'), formError = $('form-error'), again = $('again');
+
+  function toolMeta(t) {
+    var bits = [esc(t.cat), '#' + t.rank.toLocaleString('en-US') + ' of 1,000', score(t.score) + '/100', 'AI1000 lists ' + esc(priceWords(t)), esc(TRAINS_LABEL[t.tr])];
+    return bits.map(function (b) { return '<span>' + b + '</span>'; }).join('');
+  }
+  function paidCell(e) {
+    if (e.price != null) return '<div class="paid">' + esc(money(e.price, e.cur)) + '<small>a month, your figure</small></div>';
+    return '<div class="paid none">—<small>no price given</small></div>';
+  }
+  function rowHtml(e, i) {
+    var cls, body, head;
+    if (e.kind === 'ok') {
+      var t = e.tool, j = e.verdict;
+      cls = j.v;
+      head = '<span class="nm">' + esc(t.name) + '</span>';
+      if (j.v === 'replace' && j.alt) head += '<span class="arrow" aria-hidden="true"><svg viewBox="0 0 26 14"><path d="M1 7h22M17 1.5L23.5 7 17 12.5"/></svg></span><span class="sr">replace with</span><span class="alt">' + esc(j.alt.name) + '</span>';
+      body = '<h3>' + head + '</h3>' +
+        '<p class="meta">' + toolMeta(t) + '</p>' +
+        '<p class="why">' + esc(j.why) + '</p>' +
+        '<p class="src"><a href="' + SITE + 'tool-' + esc(t.slug) + '.html">The company’s own words on AI1000</a>' +
+        (j.alt ? ' · <a href="' + SITE + 'tool-' + esc(j.alt.slug) + '.html">' + esc(j.alt.name) + ' on AI1000</a>' : '') + '</p>';
+      return '<li class="row ' + cls + '" style="--i:' + i + '"><div class="v"><span class="sr">Verdict: </span>' + j.v + '</div><div class="who">' + body + '</div>' + paidCell(e) + '</li>';
+    }
+    if (e.kind === 'many') {
+      body = '<h3><span class="nm">' + esc(e.fullName) + '</span></h3>' +
+        '<p class="why">I found more than one tool called that on AI1000: ' + esc(e.tools.map(function (t) { return t.name; }).join(', ')) + '. Give me the full name and I’ll have a read.</p>';
+      return '<li class="row none" style="--i:' + i + '"><div class="v"><span class="sr">Verdict: </span>Which one?</div><div class="who">' + body + '</div>' + paidCell(e) + '</li>';
+    }
+    body = '<h3><span class="nm">' + esc(e.fullName) + '</span></h3>' +
+      '<p class="why">I don’t have a read on this one yet — here’s what to check in its privacy policy:</p>' +
+      '<ol class="checks">' + CHECKS.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ol>';
+    return '<li class="row none" style="--i:' + i + '"><div class="v"><span class="sr">Verdict: </span>No read yet</div><div class="who">' + body + '</div>' + paidCell(e) + '</li>';
+  }
+
+  function renderTotal(entries) {
+    var priced = entries.filter(function (e) { return e.price != null; });
+    var curs = {}; priced.forEach(function (e) { curs[e.cur] = (curs[e.cur] || 0) + 1; });
+    var cur = Object.keys(curs).sort(function (a, b) { return curs[b] - curs[a]; })[0] || '$';
+    var mixed = Object.keys(curs).length > 1;
+    var month = priced.reduce(function (a, e) { return a + e.price; }, 0);
+    var missing = entries.length - priced.length;
+    var html = '<div class="tt"><h2>What’s draining your budget</h2>';
+
+    if (!priced.length) {
+      totalEl.className = 'total quiet';
+      html += '<p>You didn’t give me prices, so I can’t total this. Add what you pay on each line, like <b>Notion 10</b>, and I’ll show you the number.</p></div>';
+      totalEl.innerHTML = html; return;
+    }
+    totalEl.className = 'total';
+    var sum = '<div class="sum">' + esc(money(month, cur)) + '<small>a month' + (mixed ? ', mixed currencies' : '') + '</small></div>';
+    var biggest = priced.slice().sort(function (a, b) { return b.price - a.price; })[0];
+    var line = money(month, cur) + ' a month, ' + money(month * 12, cur) + ' a year, across ' + priced.length + (priced.length === 1 ? ' tool' : ' tools');
+    if (missing) line += ' (' + missing + (missing === 1 ? ' line has' : ' lines have') + ' no price, so ' + (missing === 1 ? 'it isn’t' : 'they aren’t') + ' counted)';
+    line += '.';
+    if (priced.length > 1 && biggest.price / month >= 0.4) line += ' Most of it is ' + (biggest.kind === 'ok' ? biggest.tool.name : biggest.fullName) + ' at ' + money(biggest.price, biggest.cur) + '.';
+    html += '<p>' + esc(line) + '</p>';
+
+    var saved = 0, cuts = 0, swaps = 0;
+    priced.forEach(function (e) {
+      if (e.kind !== 'ok') return;
+      if (e.verdict.v === 'cancel') { saved += e.price; cuts++; }
+      else if (e.verdict.v === 'replace' && e.verdict.alt && listPrice(e.verdict.alt) != null && listPrice(e.verdict.alt) < e.price) { saved += e.price - listPrice(e.verdict.alt); swaps++; }
+    });
+    if (saved > 0) {
+      var act = [];
+      if (cuts) act.push('cancel the ' + (cuts === 1 ? 'one' : cuts) + ' I flagged');
+      if (swaps) act.push('make the ' + (swaps === 1 ? 'swap' : swaps + ' swaps'));
+      html += '<p>' + esc(act.join(', ').replace(/^./, function (c) { return c.toUpperCase(); }) + (act.length > 1 ? ', and you keep ' : ' and you keep ') + money(saved, cur) + ' a month, ' + money(saved * 12, cur) + ' a year.') + '</p>';
+    } else if (mixed) {
+      html += '<p>I added the numbers as given; you mixed currencies, so treat the total as rough.</p>';
+    }
+    totalEl.innerHTML = html + '</div>' + sum;
+  }
+
+  function run() {
+    var lines = $('tools').value.split(/\r?\n/).map(parseLine).filter(Boolean);
+    formError.hidden = true;
+    if (!lines.length) {
+      formError.textContent = 'Give me at least one tool to look at.'; formError.hidden = false;
+      $('tools').focus(); return;
+    }
+    var entries = lines.map(function (p) {
+      var r = lookup(p.name);
+      if (r.kind !== 'ok' && p.price != null) {
+        var r2 = lookup(p.fullName);
+        if (r2.kind === 'ok') { r = r2; p.price = null; }
+      }
+      var e = { kind: r.kind, tool: r.tool, tools: r.tools, name: p.name, fullName: p.price != null ? p.name : p.fullName, price: p.price, cur: p.cur };
+      return e;
+    });
+    var seen = {};
+    entries = entries.filter(function (e) {
+      if (e.kind !== 'ok') return true;
+      if (seen[e.tool.slug]) return false;
+      seen[e.tool.slug] = true; return true;
+    });
+    var matched = entries.filter(function (e) { return e.kind === 'ok'; });
+    matched.forEach(function (e, i) { e.verdict = judge(e, i, matched); });
+
+    sheet.innerHTML = entries.map(rowHtml).join('');
+    var known = matched.length, counts = { keep: 0, cancel: 0, replace: 0 };
+    matched.forEach(function (e) { counts[e.verdict.v]++; });
+    $('results-count').textContent = known + ' of ' + entries.length + ' recognised · ' + counts.keep + ' keep · ' + counts.cancel + ' cancel · ' + counts.replace + ' replace';
+    renderTotal(entries);
+    results.hidden = false;
+    again.hidden = false;
+    results.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  }
+
+  $('form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var btn = $('go');
+    btn.disabled = true; btn.textContent = 'Checking…';
+    load().then(function () { run(); }, function () {
+      formError.textContent = 'I can’t judge anything until the directory loads. Try again in a moment.'; formError.hidden = false;
+    }).then(function () { btn.disabled = false; btn.textContent = 'Audit my stack'; });
+  });
+  $('tools').addEventListener('keydown', function (ev) {
+    if ((ev.metaKey || ev.ctrlKey) && ev.key === 'Enter') { ev.preventDefault(); $('go').click(); }
+  });
+  again.addEventListener('click', function () {
+    $('tools').value = ''; results.hidden = true; again.hidden = true; sheet.innerHTML = ''; totalEl.innerHTML = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' }); $('tools').focus();
+  });
+})();
+</script>
+</body>
+</html>
