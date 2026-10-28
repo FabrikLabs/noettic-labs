@@ -1,6 +1,6 @@
 # Building from Zero: Prompt Library
 
-**How to read this.** This is my working notebook, turned public. It updates as I work, so what you see is where I am right now, not a finished product. Every entry has the same four parts: a name, the prompt or config, what it's for, and what I learned. When something didn't work, I say so.
+**How to read this.** This is my working notebook, turned public. It updates as I work, so what you see is where I am right now, not a finished product.
 
 Last updated: `[DATE]`
 
