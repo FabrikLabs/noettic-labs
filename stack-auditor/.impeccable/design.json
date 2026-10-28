@@ -1,0 +1,489 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-28T06:02:00Z",
+  "title": "Design System: Stack Auditor",
+  "extensions": {
+    "colorMeta": {
+      "blue": {
+        "role": "primary",
+        "displayName": "Signal Blue",
+        "canonical": "#0030E0",
+        "tonalRamp": [
+          "oklch(15% 0.22 265)",
+          "oklch(26% 0.22 265)",
+          "oklch(37% 0.22 265)",
+          "oklch(48% 0.22 265)",
+          "oklch(60% 0.22 265)",
+          "oklch(72% 0.22 265)",
+          "oklch(84% 0.22 265)",
+          "oklch(95% 0.22 265)"
+        ]
+      },
+      "on-blue": {
+        "role": "primary",
+        "displayName": "On Blue (paper)",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "blue-dark": {
+        "role": "primary",
+        "displayName": "Signal Blue, dark mode",
+        "canonical": "#5B86FF",
+        "tonalRamp": [
+          "oklch(15% 0.17 265)",
+          "oklch(26% 0.17 265)",
+          "oklch(37% 0.17 265)",
+          "oklch(48% 0.17 265)",
+          "oklch(60% 0.17 265)",
+          "oklch(72% 0.17 265)",
+          "oklch(84% 0.17 265)",
+          "oklch(95% 0.17 265)"
+        ]
+      },
+      "on-blue-dark": {
+        "role": "primary",
+        "displayName": "On Blue (ink), dark mode",
+        "canonical": "#0A0A0A",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#0B0B0B",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink 66",
+        "canonical": "color-mix(in srgb, var(--ink) 66%, var(--paper))",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Ink 58",
+        "canonical": "color-mix(in srgb, var(--ink) 58%, var(--paper))",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Rule (alias of Ink)",
+        "canonical": "var(--ink)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "rule-soft": {
+        "role": "neutral",
+        "displayName": "Soft Rule",
+        "canonical": "color-mix(in srgb, var(--ink) 22%, var(--paper))",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "field": {
+        "role": "neutral",
+        "displayName": "Field",
+        "canonical": "color-mix(in srgb, var(--ink) 3%, var(--paper))",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "paper-dark": {
+        "role": "neutral",
+        "displayName": "Paper, dark mode",
+        "canonical": "#0A0A0A",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "ink-dark": {
+        "role": "neutral",
+        "displayName": "Ink, dark mode",
+        "canonical": "#F4F4F1",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The h1 only; balanced, max 16ch, one phrase in blue. font-stretch 82%."
+      },
+      "verdict": {
+        "displayName": "Verdict",
+        "purpose": "KEEP / CANCEL / REPLACE word opening each ledger row; uppercase, font-stretch 78%; 1.55rem under 640px."
+      },
+      "sum": {
+        "displayName": "Sum",
+        "purpose": "The monthly total under the 3px rule; tabular numerals, font-stretch 82%."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Sheet heading 'The verdicts' (uppercase, font-stretch 85%); budget heading at 1.2rem."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Tool name in each row; REPLACE alternative follows the arrow in the same weight, in blue."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All reasoning prose at a 66ch measure; budget sentences at 1.02rem."
+      },
+      "body-lede": {
+        "displayName": "Body Lede",
+        "purpose": "The intro paragraph under the headline."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase form label in Ink 66; the same voice at 0.72rem captions paid cells and the sum."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Tabular fact line under each tool name, the status line, source links, results count."
+      }
+    },
+    "fonts": [
+      {
+        "family": "Archivo",
+        "axes": "wdth 75-125, wght 400-800, ital",
+        "source": "Google Fonts (single-file deliverable)",
+        "fallback": "system-ui, Helvetica Neue, Arial, sans-serif",
+        "risk": "Fallback stack has no width axis; verdict words, headline and sum lose their condensation if the font request is blocked."
+      },
+      {
+        "family": "Source Serif 4",
+        "axes": "opsz 8-60, wght 400-600, ital",
+        "source": "Google Fonts (single-file deliverable)",
+        "fallback": "Georgia, Times New Roman, serif",
+        "risk": "Optical sizing lost on fallback; hierarchy holds."
+      }
+    ],
+    "shadows": [],
+    "rules": [
+      {
+        "name": "hairline-soft",
+        "value": "1px solid var(--rule-soft)",
+        "purpose": "Between ledger rows, inside the textarea, folio link underline at rest."
+      },
+      {
+        "name": "hairline",
+        "value": "1px solid var(--rule)",
+        "purpose": "Under the folio, above the form, under the last row, above the close, textarea and ghost button borders."
+      },
+      {
+        "name": "heading-rule",
+        "value": "2px solid var(--rule)",
+        "purpose": "Under the sheet heading."
+      },
+      {
+        "name": "total-rule",
+        "value": "3px solid var(--rule)",
+        "purpose": "Above the budget total, receipt-style."
+      },
+      {
+        "name": "strike",
+        "value": "2px var(--ink) at 52% height, overhang 2px each side",
+        "purpose": "Drawn through a cancelled tool's name."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "Default easing for rise, strike and button transforms."
+      },
+      {
+        "name": "rise",
+        "value": "0.42s, translateY(8px) to 0, opacity 0 to 1, stagger calc(var(--i) * 70ms)",
+        "purpose": "Ledger rows appearing after audit."
+      },
+      {
+        "name": "strike",
+        "value": "0.5s scaleX(0) to 1 from left, delay calc(var(--i) * 70ms + .38s)",
+        "purpose": "CANCEL strike drawn after the row lands."
+      },
+      {
+        "name": "button",
+        "value": "transform .15s ease, filter .15s ease",
+        "purpose": "Primary button hover/active."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animations off; strike pre-drawn; no button transition",
+        "purpose": "prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone",
+        "value": "480px",
+        "purpose": "Folio link hides."
+      },
+      {
+        "name": "ledger-collapse",
+        "value": "640px",
+        "purpose": "Row goes to two columns; budget and sheet heading stack."
+      },
+      {
+        "name": "column",
+        "value": "820px",
+        "purpose": "Max content width."
+      }
+    ],
+    "theme": {
+      "mechanism": "prefers-color-scheme: dark (unless [data-theme=\"light\"]) or [data-theme=\"dark\"]; color-scheme follows",
+      "swaps": {
+        "paper": "#0A0A0A",
+        "ink": "#F4F4F1",
+        "blue": "#5B86FF",
+        "on-blue": "#0A0A0A"
+      }
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one call to action, 'Audit my stack'. Signal Blue fill, square-ish, brightens on hover.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Audit my stack</button>",
+      "css": ".ds-btn-primary{appearance:none;border:0;border-radius:2px;background:var(--blue,#0030E0);color:var(--on-blue,#fff);font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-weight:700;font-size:.98rem;letter-spacing:.01em;padding:14px 22px;min-height:48px;cursor:pointer;transition:transform .15s cubic-bezier(.16,1,.3,1),filter .15s ease}.ds-btn-primary:hover{filter:brightness(1.08)}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:focus-visible{outline:2px solid var(--blue,#0030E0);outline-offset:3px}.ds-btn-primary[disabled]{cursor:progress;opacity:.72}"
+    },
+    {
+      "name": "Ghost Button (theme switch)",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Hairline-bordered uppercase micro button; inverts to solid ink on hover.",
+      "html": "<button class=\"ds-btn-ghost\" type=\"button\" aria-pressed=\"false\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"5.5\"/><path d=\"M8 2.5v11\"/><path d=\"M8 2.5a5.5 5.5 0 0 1 0 11\" fill=\"currentColor\" stroke=\"none\"/></svg><span>Dark</span></button>",
+      "css": ".ds-btn-ghost{appearance:none;background:none;border:1px solid var(--rule,#0B0B0B);border-radius:2px;padding:5px 9px;cursor:pointer;font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-size:.74rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;line-height:1;min-height:28px;display:inline-flex;align-items:center;gap:6px;color:var(--ink,#0B0B0B)}.ds-btn-ghost:hover{background:var(--ink,#0B0B0B);color:var(--paper,#fff)}.ds-btn-ghost:focus-visible{outline:2px solid var(--blue,#0030E0);outline-offset:3px}.ds-btn-ghost svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}"
+    },
+    {
+      "name": "Ruled Textarea",
+      "kind": "input",
+      "refersTo": "textarea",
+      "description": "Full-width paste field on a 3% ink tint with 32px ruled lines; blue outline and border on focus.",
+      "html": "<label class=\"ds-label\" for=\"ds-tools\">Your tools, one per line</label><textarea class=\"ds-textarea\" id=\"ds-tools\" spellcheck=\"false\" placeholder=\"ChatGPT 20&#10;Granola 14&#10;Notion\"></textarea>",
+      "css": ".ds-label{display:block;font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-weight:600;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2,#5f5f5f);margin:0 0 10px}.ds-textarea{display:block;width:100%;min-height:208px;resize:vertical;padding:14px 16px;border:1px solid var(--rule,#0B0B0B);border-radius:2px;background:var(--field,#f7f7f7);color:var(--ink,#0B0B0B);font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-size:1.05rem;line-height:32px;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,var(--rule-soft,#c9c9c9) 31px,var(--rule-soft,#c9c9c9) 32px);background-attachment:local;background-position:0 14px;font-variant-numeric:tabular-nums}.ds-textarea::placeholder{color:var(--ink-2,#5f5f5f)}.ds-textarea:focus{outline:2px solid var(--blue,#0030E0);outline-offset:0;border-color:var(--blue,#0030E0)}"
+    },
+    {
+      "name": "Folio",
+      "kind": "nav",
+      "refersTo": "folio",
+      "description": "Single-line masthead closed by a 1px ink rule: name left, plain-ink link and theme switch right.",
+      "html": "<header class=\"ds-folio\"><span class=\"ds-folio-name\">Stack Auditor</span><div class=\"ds-folio-right\"><a href=\"#\">Building From Zero</a></div></header>",
+      "css": ".ds-folio{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0 14px;border-bottom:1px solid var(--rule,#0B0B0B);font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-size:.82rem;letter-spacing:.02em;color:var(--ink,#0B0B0B)}.ds-folio-name{font-weight:700;font-stretch:90%;font-size:.95rem;letter-spacing:0;text-transform:uppercase}.ds-folio-right{display:flex;align-items:center;gap:18px}.ds-folio-right a{color:var(--ink,#0B0B0B);text-decoration:none;border-bottom:1px solid var(--rule-soft,#c9c9c9)}.ds-folio-right a:hover{border-bottom-color:var(--ink,#0B0B0B)}.ds-folio-right a:focus-visible{outline:2px solid var(--blue,#0030E0);outline-offset:3px}"
+    },
+    {
+      "name": "Text Link",
+      "kind": "custom",
+      "refersTo": "link",
+      "description": "Signal Blue text with a 1px underline at 55% blue, full blue on hover.",
+      "html": "<p class=\"ds-prose\">I check each against the <a class=\"ds-link\" href=\"#\">AI1000 directory</a>, which ranks 1,000 AI tools.</p>",
+      "css": ".ds-prose{font-family:\"Source Serif 4\",Georgia,\"Times New Roman\",serif;font-size:17px;line-height:1.55;color:var(--ink,#0B0B0B);max-width:66ch;margin:0}.ds-link{color:var(--blue,#0030E0);text-decoration-thickness:1px;text-underline-offset:.16em;text-decoration-color:color-mix(in srgb,var(--blue,#0030E0) 55%,transparent)}.ds-link:hover{text-decoration-color:var(--blue,#0030E0)}.ds-link:focus-visible{outline:2px solid var(--blue,#0030E0);outline-offset:3px}"
+    },
+    {
+      "name": "Verdict Row: KEEP",
+      "kind": "custom",
+      "refersTo": "verdict-keep",
+      "description": "Ledger row with the verdict word in blue condensed Archivo, tool name, tabular meta line, serif reasoning, and the reader's figure at right.",
+      "html": "<ol class=\"ds-sheet\"><li class=\"ds-row ds-keep\"><div class=\"ds-v\">keep</div><div class=\"ds-who\"><h3><span class=\"ds-nm\">Granola</span></h3><p class=\"ds-meta\"><span>Meeting notes</span><span>#41 of 1,000</span><span>82/100</span><span>Doesn't train on your data</span></p><p class=\"ds-why\">It leads meeting notes on AI1000 at 82 out of 100, the company says it doesn't train on your data, and nothing in the category matches its score for the same money or less. That's a seat earned, not a habit.</p></div><div class=\"ds-paid\">$14<small>a month, your figure</small></div></li></ol>",
+      "css": ".ds-sheet{list-style:none;margin:0;padding:0;color:var(--ink,#0B0B0B)}.ds-row{display:grid;grid-template-columns:9.5rem minmax(0,1fr) auto;gap:6px 20px;padding:18px 0 20px;border-bottom:1px solid var(--rule-soft,#c9c9c9)}.ds-row:last-child{border-bottom:1px solid var(--rule,#0B0B0B)}.ds-v{font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-weight:800;font-stretch:78%;text-transform:uppercase;font-size:1.9rem;line-height:1;letter-spacing:-.005em;padding-top:2px;color:var(--ink,#0B0B0B)}.ds-keep .ds-v{color:var(--blue,#0030E0)}.ds-who{min-width:0}.ds-who h3{margin:0;font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-weight:700;font-size:1.25rem;line-height:1.2;letter-spacing:-.005em;display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px}.ds-nm{position:relative;display:inline-block}.ds-meta{margin:6px 0 0;font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-size:.78rem;line-height:1.5;color:var(--ink-2,#5f5f5f);font-variant-numeric:tabular-nums}.ds-meta span+span::before{content:\"\\00b7\";margin:0 .5em;color:var(--ink-3,#6e6e6e)}.ds-why{margin:10px 0 0;max-width:66ch;font-family:\"Source Serif 4\",Georgia,\"Times New Roman\",serif;font-size:1.02rem;line-height:1.55}.ds-paid{font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;font-weight:600;font-size:1rem;line-height:1.2;padding-top:4px}.ds-paid small{display:block;font-weight:500;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3,#6e6e6e);margin-top:3px}@media (max-width:640px){.ds-row{grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;padding:16px 0 18px}.ds-v{grid-column:1 / -1;font-size:1.55rem;margin-bottom:4px}.ds-who{grid-column:1}.ds-paid{grid-column:2;grid-row:2}}"
+    },
+    {
+      "name": "Verdict Row: CANCEL (strike)",
+      "kind": "custom",
+      "refersTo": "verdict-cancel",
+      "description": "Same ledger row with the verdict in ink and a 2px ink strike drawn through the tool's name on reveal.",
+      "html": "<ol class=\"ds-sheet\"><li class=\"ds-row ds-cancel\" style=\"--i:0\"><div class=\"ds-v\">cancel</div><div class=\"ds-who\"><h3><span class=\"ds-nm\">Otter.ai</span></h3><p class=\"ds-meta\"><span>Meeting notes</span><span>#120 of 1,000</span><span>71/100</span><span>Trains on your data by default</span></p><p class=\"ds-why\">Otter.ai trains on your data by default. That comes from the company's own page, as recorded on AI1000, and \"by default\" is the part that decides it.</p></div><div class=\"ds-paid\">$17<small>a month, your figure</small></div></li></ol>",
+      "css": ".ds-sheet{list-style:none;margin:0;padding:0;color:var(--ink,#0B0B0B)}.ds-row{display:grid;grid-template-columns:9.5rem minmax(0,1fr) auto;gap:6px 20px;padding:18px 0 20px;border-bottom:1px solid var(--rule,#0B0B0B);animation:ds-rise .42s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i,0) * 70ms)}.ds-v{font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-weight:800;font-stretch:78%;text-transform:uppercase;font-size:1.9rem;line-height:1;letter-spacing:-.005em;padding-top:2px;color:var(--ink,#0B0B0B)}.ds-who{min-width:0}.ds-who h3{margin:0;font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-weight:700;font-size:1.25rem;line-height:1.2;letter-spacing:-.005em}.ds-nm{position:relative;display:inline-block}.ds-cancel .ds-nm::after{content:\"\";position:absolute;left:-2px;right:-2px;top:52%;height:2px;background:var(--ink,#0B0B0B);transform:scaleX(0);transform-origin:left center;animation:ds-strike .5s cubic-bezier(.16,1,.3,1) forwards;animation-delay:calc(var(--i,0) * 70ms + .38s)}.ds-meta{margin:6px 0 0;font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-size:.78rem;line-height:1.5;color:var(--ink-2,#5f5f5f);font-variant-numeric:tabular-nums}.ds-meta span+span::before{content:\"\\00b7\";margin:0 .5em;color:var(--ink-3,#6e6e6e)}.ds-why{margin:10px 0 0;max-width:66ch;font-family:\"Source Serif 4\",Georgia,\"Times New Roman\",serif;font-size:1.02rem;line-height:1.55}.ds-paid{font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;font-weight:600;font-size:1rem;line-height:1.2;padding-top:4px}.ds-paid small{display:block;font-weight:500;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3,#6e6e6e);margin-top:3px}@keyframes ds-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes ds-strike{to{transform:scaleX(1)}}@media (prefers-reduced-motion:reduce){.ds-row{animation:none}.ds-cancel .ds-nm::after{animation:none;transform:scaleX(1)}}"
+    },
+    {
+      "name": "Verdict Row: REPLACE (arrow)",
+      "kind": "custom",
+      "refersTo": "verdict-replace",
+      "description": "Ledger row with the verdict in ink, an Ink-66 drawn arrow, and the alternative's name in blue at title weight.",
+      "html": "<ol class=\"ds-sheet\"><li class=\"ds-row ds-replace\"><div class=\"ds-v\">replace</div><div class=\"ds-who\"><h3><span class=\"ds-nm\">Jasper</span><span class=\"ds-arrow\" aria-hidden=\"true\"><svg viewBox=\"0 0 26 14\"><path d=\"M1 7h22M17 1.5L23.5 7 17 12.5\"/></svg></span><span class=\"ds-alt\">Claude</span></h3><p class=\"ds-meta\"><span>Writing</span><span>#88 of 1,000</span><span>74/100</span><span>Trains only if you opt in</span></p><p class=\"ds-why\">Claude does the same job (writing) for $20 a seat a month against the $49 you're paying, scores 91 to Jasper's 74, and doesn't train on your data. Swap and keep the difference.</p></div><div class=\"ds-paid\">$49<small>a month, your figure</small></div></li></ol>",
+      "css": ".ds-sheet{list-style:none;margin:0;padding:0;color:var(--ink,#0B0B0B)}.ds-row{display:grid;grid-template-columns:9.5rem minmax(0,1fr) auto;gap:6px 20px;padding:18px 0 20px;border-bottom:1px solid var(--rule,#0B0B0B)}.ds-v{font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-weight:800;font-stretch:78%;text-transform:uppercase;font-size:1.9rem;line-height:1;letter-spacing:-.005em;padding-top:2px;color:var(--ink,#0B0B0B)}.ds-who{min-width:0}.ds-who h3{margin:0;font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-weight:700;font-size:1.25rem;line-height:1.2;letter-spacing:-.005em;display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px}.ds-arrow{display:inline-flex;align-items:center;color:var(--ink-2,#5f5f5f)}.ds-arrow svg{width:26px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}.ds-alt{color:var(--blue,#0030E0)}.ds-meta{margin:6px 0 0;font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-size:.78rem;line-height:1.5;color:var(--ink-2,#5f5f5f);font-variant-numeric:tabular-nums}.ds-meta span+span::before{content:\"\\00b7\";margin:0 .5em;color:var(--ink-3,#6e6e6e)}.ds-why{margin:10px 0 0;max-width:66ch;font-family:\"Source Serif 4\",Georgia,\"Times New Roman\",serif;font-size:1.02rem;line-height:1.55}.ds-paid{font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;font-weight:600;font-size:1rem;line-height:1.2;padding-top:4px}.ds-paid small{display:block;font-weight:500;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3,#6e6e6e);margin-top:3px}"
+    },
+    {
+      "name": "Budget Total",
+      "kind": "custom",
+      "refersTo": "sum",
+      "description": "Receipt-style close: 3px ink rule, uppercase heading, serif sentence, and the tabular sum at right.",
+      "html": "<div class=\"ds-total\"><div class=\"ds-tt\"><h2>What's draining your budget</h2><p>$51 a month, $612 a year, across 3 tools. Most of it is Jasper at $49.</p></div><div class=\"ds-sum\">$51<small>a month</small></div></div>",
+      "css": ".ds-total{padding-top:16px;border-top:3px solid var(--rule,#0B0B0B);display:flex;justify-content:space-between;align-items:flex-start;gap:12px 32px;color:var(--ink,#0B0B0B)}.ds-tt{min-width:0;flex:1 1 auto}.ds-total h2{margin:0;font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-weight:800;font-stretch:85%;font-size:1.2rem;letter-spacing:-.005em;text-transform:uppercase}.ds-total p{margin:8px 0 0;max-width:66ch;font-family:\"Source Serif 4\",Georgia,\"Times New Roman\",serif;font-size:1.02rem;line-height:1.55}.ds-sum{font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;font-weight:800;font-stretch:82%;font-size:clamp(2rem,6vw,3rem);line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;text-align:right;flex:none}.ds-sum small{display:block;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2,#5f5f5f);margin-top:6px;font-stretch:100%}@media (max-width:640px){.ds-total{flex-direction:column;align-items:stretch}.ds-sum{text-align:left;margin:8px 0 0}}"
+    },
+    {
+      "name": "Sheet Heading",
+      "kind": "custom",
+      "refersTo": "headline",
+      "description": "Uppercase condensed heading over a 2px ink rule with a tabular count at right.",
+      "html": "<div class=\"ds-sheet-h\"><h2>The verdicts</h2><span>3 of 3 recognised &middot; 1 keep &middot; 1 cancel &middot; 1 replace</span></div>",
+      "css": ".ds-sheet-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--rule,#0B0B0B);padding-bottom:8px;font-family:\"Archivo\",system-ui,\"Helvetica Neue\",Arial,sans-serif;color:var(--ink,#0B0B0B)}.ds-sheet-h h2{margin:0;font-weight:800;font-stretch:85%;font-size:1.5rem;letter-spacing:-.01em;text-transform:uppercase}.ds-sheet-h span{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2,#5f5f5f);font-variant-numeric:tabular-nums}@media (max-width:640px){.ds-sheet-h{flex-direction:column;align-items:flex-start;gap:4px}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Verdict Sheet",
+    "overview": "Stack Auditor is one typeset column of judgments, not a dashboard. Everything on the page is ink on paper: black text, black hairlines, a white field, and one bright blue that appears only where the page is pointing (the headline's key phrase, the KEEP verdict, the one button, links, selection, caret, focus). Greys do not exist as independent colours; secondary text and soft rules are tints of ink mixed into paper, so the palette inverts in dark mode by swapping two values and the tints follow.\n\nType does the structural work. Archivo on its width axis is the voice of judgment: verdict words are condensed to 78% and set at display size, section heads at 85%, the headline and budget total at 82%. Source Serif 4 carries every sentence of reasoning and the intro, at 17px with a 66ch measure. Prices, ranks, and scores are tabular so columns of numbers line up like a receipt.\n\nThe page refuses the card grid, the score gauge, the coloured badge row, and the hero metric. Depth is conveyed by rule weight alone: 1px hairlines between rows, a 2px rule under the sheet heading, a 3px rule above the budget total. Nothing has a shadow and nothing is rounded past 2px. The build landed the brief's world as pinned by the user (clean, minimal, black-and-white editorial, one bright blue, dark-mode friendly); the finish review disposition was ship after one fix round.",
+    "keyCharacteristics": [
+      "Two colours plus one accent; secondary tones are ink tints, never separate greys",
+      "Condensed Archivo verdict words (800 weight, 78% width) as the loudest element on the page",
+      "Serif reasoning prose at a 66ch measure",
+      "Structure by hairline rule weight (1px / 2px / 3px), no cards, no shadows",
+      "Blue is a pointer, not a decoration: eight named uses and no others",
+      "Tabular numerals wherever money or scores appear",
+      "Dark mode is a true inversion with a brighter blue (#5B86FF) for contrast on ink"
+    ],
+    "rules": [
+      {
+        "name": "The One Blue Rule",
+        "body": "Blue appears only on: the headline key phrase, KEEP, the primary button, links (including a REPLACE alternative's name), selection, caret, focus, and the loaded-status dot. CANCEL and REPLACE are ink. Nothing else on the page is blue, and no second accent exists.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ink-Tint Rule",
+        "body": "There are no grey tokens. Any tone between paper and ink is `color-mix(in srgb, var(--ink) N%, var(--paper))` so it inverts with the theme. Do not introduce a hex grey.",
+        "section": "colors"
+      },
+      {
+        "name": "The Inversion Rule",
+        "body": "Dark mode swaps `paper`, `ink`, `blue`, and `on-blue` and nothing else. It is reached by `prefers-color-scheme: dark` (unless `[data-theme=\"light\"]`) or `[data-theme=\"dark\"]`, and `color-scheme` follows so native controls match.",
+        "section": "colors"
+      },
+      {
+        "name": "The Width-Axis Rule",
+        "body": "Archivo's width is a hierarchy instrument: 78% for verdict words, 82% for the display headline and budget total, 85% for section heads, 90% for the folio name, 100% for everything else. Do not fake condensation with letter-spacing.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Any price, rank, score, or count is set with `font-variant-numeric: tabular-nums` in Archivo.",
+        "section": "typography"
+      },
+      {
+        "name": "The Serif-Reasons Rule",
+        "body": "Sentences the reader is meant to read (intro, reasoning, budget prose, newsletter line) are Source Serif 4. Archivo is for words that are judged, labelled, or counted.",
+        "section": "typography"
+      },
+      {
+        "name": "The Rule-Weight Rule",
+        "body": "Hierarchy of containment is 1px soft / 1px ink / 2px ink / 3px ink. Add structure by choosing a rule weight, never by adding a background, border box, or shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep blue to the eight sanctioned uses in The One Blue Rule and set CANCEL and REPLACE in ink.",
+      "Do build every secondary tone as an ink-into-paper `color-mix` so it survives the dark-mode inversion.",
+      "Do set verdict words in Archivo 800 at `font-stretch: 78%`, uppercase, and never fake the condensation with tracking.",
+      "Do separate content with 1px hairlines and reserve 2px for the sheet heading and 3px for the budget total.",
+      "Do set every price, rank, score, and count with tabular numerals.",
+      "Do cap prose at 66ch and keep reasoning in Source Serif 4 at 17px / 1.55.",
+      "Do respect `prefers-reduced-motion`: rows appear in place and the strike is already drawn.",
+      "Do keep the 2px focus outline in blue at 3px offset on every control."
+    ],
+    "donts": [
+      "Don't add cards, boxed rows, background panels, or any box-shadow; depth is rule weight.",
+      "Don't exceed a 2px radius on any container, field, or button.",
+      "Don't introduce a hex grey, a second accent, or status colours (no red CANCEL, no green KEEP).",
+      "Don't use a score gauge, badge row, hero metric, or icon set; the arrow and the theme glyph are the only icons.",
+      "Don't set reasoning prose in Archivo or verdict words in the serif.",
+      "Don't let the fallback stack stand in for Archivo on a surface where the condensed verdict is the point; the width axis only exists in the loaded font."
+    ]
+  }
+}
