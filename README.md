@@ -31,7 +31,11 @@ cd noettic-labs
 noettic-labs/
 ├── README.md          # This file
 ├── LICENSE            # MIT License
-└── .gitignore         # Git ignore rules
+├── .gitignore         # Git ignore rules
+├── index.html         # Noettic Labs site
+└── prompts/           # Building from Zero prompt library (prompts.buildingfromzero.co)
+    ├── PROMPT-LIBRARY.md   # The content: edit this, the page renders it
+    └── index.html          # Static renderer, deployed as its own Vercel project
 ```
 
 ## Contributing

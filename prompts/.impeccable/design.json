@@ -1,0 +1,518 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-28T00:00:00Z",
+  "title": "Design System: Prompt Library (Building from Zero)",
+  "extensions": {
+    "colorMeta": {
+      "cloth": {
+        "role": "primary",
+        "displayName": "Bottle-green Cloth",
+        "canonical": "oklch(33.1% 0.049 156)",
+        "tonalRamp": [
+          "oklch(15% 0.049 156)",
+          "oklch(26% 0.049 156)",
+          "oklch(38% 0.049 156)",
+          "oklch(49% 0.049 156)",
+          "oklch(60% 0.049 156)",
+          "oklch(72% 0.049 156)",
+          "oklch(83% 0.049 156)",
+          "oklch(95% 0.049 156)"
+        ]
+      },
+      "cloth-deep": {
+        "role": "primary",
+        "displayName": "Cloth Deep",
+        "canonical": "oklch(28.3% 0.045 154)",
+        "tonalRamp": [
+          "oklch(15% 0.045 154)",
+          "oklch(26% 0.045 154)",
+          "oklch(38% 0.045 154)",
+          "oklch(49% 0.045 154)",
+          "oklch(60% 0.045 154)",
+          "oklch(72% 0.045 154)",
+          "oklch(83% 0.045 154)",
+          "oklch(95% 0.045 154)"
+        ]
+      },
+      "cloth-ink": {
+        "role": "primary",
+        "displayName": "Cloth Ink",
+        "canonical": "oklch(94.0% 0.017 137)",
+        "tonalRamp": [
+          "oklch(15% 0.017 137)",
+          "oklch(26% 0.017 137)",
+          "oklch(38% 0.017 137)",
+          "oklch(49% 0.017 137)",
+          "oklch(60% 0.017 137)",
+          "oklch(72% 0.017 137)",
+          "oklch(83% 0.017 137)",
+          "oklch(95% 0.017 137)"
+        ]
+      },
+      "cloth-ink-2": {
+        "role": "primary",
+        "displayName": "Cloth Ink 2",
+        "canonical": "oklch(82.8% 0.035 145)",
+        "tonalRamp": [
+          "oklch(15% 0.035 145)",
+          "oklch(26% 0.035 145)",
+          "oklch(38% 0.035 145)",
+          "oklch(49% 0.035 145)",
+          "oklch(60% 0.035 145)",
+          "oklch(72% 0.035 145)",
+          "oklch(83% 0.035 145)",
+          "oklch(95% 0.035 145)"
+        ]
+      },
+      "stamp": {
+        "role": "tertiary",
+        "displayName": "Stamp Red",
+        "canonical": "oklch(50.1% 0.178 29)",
+        "tonalRamp": [
+          "oklch(15% 0.100 29)",
+          "oklch(26% 0.100 29)",
+          "oklch(38% 0.100 29)",
+          "oklch(49% 0.100 29)",
+          "oklch(60% 0.100 29)",
+          "oklch(72% 0.100 29)",
+          "oklch(83% 0.100 29)",
+          "oklch(95% 0.100 29)"
+        ]
+      },
+      "stock": {
+        "role": "neutral",
+        "displayName": "Stock",
+        "canonical": "oklch(94.0% 0.017 137)",
+        "tonalRamp": [
+          "oklch(15% 0.017 137)",
+          "oklch(26% 0.017 137)",
+          "oklch(38% 0.017 137)",
+          "oklch(49% 0.017 137)",
+          "oklch(60% 0.017 137)",
+          "oklch(72% 0.017 137)",
+          "oklch(83% 0.017 137)",
+          "oklch(95% 0.017 137)"
+        ]
+      },
+      "stock-deep": {
+        "role": "neutral",
+        "displayName": "Stock Deep",
+        "canonical": "oklch(91.3% 0.022 137)",
+        "tonalRamp": [
+          "oklch(15% 0.022 137)",
+          "oklch(26% 0.022 137)",
+          "oklch(38% 0.022 137)",
+          "oklch(49% 0.022 137)",
+          "oklch(60% 0.022 137)",
+          "oklch(72% 0.022 137)",
+          "oklch(83% 0.022 137)",
+          "oklch(95% 0.022 137)"
+        ]
+      },
+      "field": {
+        "role": "neutral",
+        "displayName": "Field",
+        "canonical": "oklch(96.5% 0.010 131)",
+        "tonalRamp": [
+          "oklch(15% 0.010 131)",
+          "oklch(26% 0.010 131)",
+          "oklch(38% 0.010 131)",
+          "oklch(49% 0.010 131)",
+          "oklch(60% 0.010 131)",
+          "oklch(72% 0.010 131)",
+          "oklch(83% 0.010 131)",
+          "oklch(95% 0.010 131)"
+        ]
+      },
+      "label": {
+        "role": "neutral",
+        "displayName": "Label",
+        "canonical": "oklch(96.9% 0.010 126)",
+        "tonalRamp": [
+          "oklch(15% 0.010 126)",
+          "oklch(26% 0.010 126)",
+          "oklch(38% 0.010 126)",
+          "oklch(49% 0.010 126)",
+          "oklch(60% 0.010 126)",
+          "oklch(72% 0.010 126)",
+          "oklch(83% 0.010 126)",
+          "oklch(95% 0.010 126)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(21.0% 0.012 156)",
+        "tonalRamp": [
+          "oklch(15% 0.012 156)",
+          "oklch(26% 0.012 156)",
+          "oklch(38% 0.012 156)",
+          "oklch(49% 0.012 156)",
+          "oklch(60% 0.012 156)",
+          "oklch(72% 0.012 156)",
+          "oklch(83% 0.012 156)",
+          "oklch(95% 0.012 156)"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink 2",
+        "canonical": "oklch(42.9% 0.026 158)",
+        "tonalRamp": [
+          "oklch(15% 0.026 158)",
+          "oklch(26% 0.026 158)",
+          "oklch(38% 0.026 158)",
+          "oklch(49% 0.026 158)",
+          "oklch(60% 0.026 158)",
+          "oklch(72% 0.026 158)",
+          "oklch(83% 0.026 158)",
+          "oklch(95% 0.026 158)"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Ink 3",
+        "canonical": "oklch(49.0% 0.026 151)",
+        "tonalRamp": [
+          "oklch(15% 0.026 151)",
+          "oklch(26% 0.026 151)",
+          "oklch(38% 0.026 151)",
+          "oklch(49% 0.026 151)",
+          "oklch(60% 0.026 151)",
+          "oklch(72% 0.026 151)",
+          "oklch(83% 0.026 151)",
+          "oklch(95% 0.026 151)"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Rule",
+        "canonical": "rgba(31,61,43,.42)",
+        "tonalRamp": [
+          "rgba(31,61,43,.9)",
+          "rgba(31,61,43,.8)",
+          "rgba(31,61,43,.7)",
+          "rgba(31,61,43,.6)",
+          "rgba(31,61,43,.5)",
+          "rgba(31,61,43,.42)",
+          "rgba(31,61,43,.3)",
+          "rgba(31,61,43,.18)"
+        ]
+      },
+      "rule-soft": {
+        "role": "neutral",
+        "displayName": "Rule Soft",
+        "canonical": "rgba(31,61,43,.18)",
+        "tonalRamp": [
+          "rgba(31,61,43,.42)",
+          "rgba(31,61,43,.36)",
+          "rgba(31,61,43,.3)",
+          "rgba(31,61,43,.24)",
+          "rgba(31,61,43,.18)",
+          "rgba(31,61,43,.13)",
+          "rgba(31,61,43,.09)",
+          "rgba(31,61,43,.05)"
+        ]
+      },
+      "grid": {
+        "role": "neutral",
+        "displayName": "Grid (quad line on stock)",
+        "canonical": "rgba(31,61,43,.13)",
+        "tonalRamp": [
+          "rgba(31,61,43,.42)",
+          "rgba(31,61,43,.36)",
+          "rgba(31,61,43,.3)",
+          "rgba(31,61,43,.24)",
+          "rgba(31,61,43,.18)",
+          "rgba(31,61,43,.13)",
+          "rgba(31,61,43,.09)",
+          "rgba(31,61,43,.05)"
+        ]
+      },
+      "grid-dark": {
+        "role": "neutral",
+        "displayName": "Grid Dark (quad line on cloth)",
+        "canonical": "rgba(230,238,227,.09)",
+        "tonalRamp": [
+          "rgba(230,238,227,.4)",
+          "rgba(230,238,227,.32)",
+          "rgba(230,238,227,.25)",
+          "rgba(230,238,227,.18)",
+          "rgba(230,238,227,.13)",
+          "rgba(230,238,227,.09)",
+          "rgba(230,238,227,.06)",
+          "rgba(230,238,227,.03)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The cover title only. Barlow Semi Condensed 700."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings; appendix headings at 1.5rem; contents heading at 1.25rem uppercase."
+      },
+      "numeral": {
+        "displayName": "Numeral",
+        "purpose": "The cloth section number. Smaller cousins at 1.35rem (contents), 1.05rem (strip), 0.95rem (rail). Always tabular."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Entry titles in the strip; contents names at 1.05rem; rail items at 0.95rem/500."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text, field values, intros. 70ch measure; cover intro 52ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Preprinted uppercase labels and controls: field labels, code header, copy tab, dates, counts, rail heading. Tracking 0.06em to 0.14em."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Code fields and inline code (0.88em). JetBrains Mono variable."
+      }
+    },
+    "shadows": [
+      {
+        "name": "plate-lift",
+        "value": "0 10px 24px -8px rgba(0,0,0,.45)",
+        "purpose": "The cover plate on the cloth band; the only shadow in the system. Removed in print."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "Exponential ease-out for the copied-rule draw across a code header."
+      },
+      {
+        "name": "copied-rule",
+        "value": "width .6s cubic-bezier(.16,1,.3,1)",
+        "purpose": "2px cloth rule grows 0 to 100% on copy; collapses after 1.8s. Disabled under reduced motion."
+      },
+      {
+        "name": "tab-fill",
+        "value": "background-color .15s ease",
+        "purpose": "Copy tab hover/active fill change. Disabled under reduced motion."
+      },
+      {
+        "name": "scroll",
+        "value": "scroll-behavior: smooth",
+        "purpose": "Hash navigation to sections and entries (scroll-margin-top 24px). Auto under reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact",
+        "value": "600px",
+        "purpose": "max-width: entry strip stacks to two rows; ruled fields stack; plate footer stacks."
+      },
+      {
+        "name": "book",
+        "value": "1024px",
+        "purpose": "min-width: the 232px sticky rail appears and the book becomes two columns."
+      }
+    ],
+    "layout": {
+      "container": "1180px",
+      "measure": "70ch",
+      "introMeasure": "52ch",
+      "rail": "232px",
+      "gutter": "clamp(16px, 4vw, 48px)",
+      "bookGap": "clamp(40px, 5vw, 72px) at 1024px+, 40px below",
+      "scrollMarginTop": "24px"
+    },
+    "grids": [
+      {
+        "name": "cover-grid",
+        "value": "24px quad in grid-dark on cloth"
+      },
+      {
+        "name": "slot-grid-inline",
+        "value": "8px quad in grid over inline slots"
+      },
+      {
+        "name": "slot-grid-code",
+        "value": "12px quad in grid over stock-deep in code slots"
+      }
+    ],
+    "browserSurface": {
+      "themeColor": "#1F3D2B",
+      "favicon": "inline SVG data URI: cloth square r=3 with stock page and three cloth rule lines",
+      "selection": "cloth on cloth-ink",
+      "caret": "cloth",
+      "focusRing": "2px solid cloth, offset 3px, 2px radius; on the copy tab: cloth-ink, offset -3px"
+    },
+    "fonts": {
+      "selfHosted": "prompts/fonts/*.woff2, font-display swap",
+      "barlow": "400 roman+italic, 500, 600, 700 static",
+      "barlowSemiCondensed": "500, 600, 700 static",
+      "sourceSerif4": "variable 200-900 roman+italic",
+      "jetbrainsMono": "variable 100-800"
+    }
+  },
+  "components": [
+    {
+      "name": "Copy Tab",
+      "kind": "button",
+      "refersTo": "copy-tab",
+      "description": "The one button in the system: a cloth label tab on a code field header. Press reads Copied with a check; a 2px cloth rule draws across the header.",
+      "html": "<div class=\"ds-code\" style=\"display:inline-block\"><div class=\"ds-code-h\"><span>text</span><button type=\"button\" class=\"ds-copy\" aria-label=\"Copy this block\"><svg class=\"ds-ic-copy\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" width=\"14\" height=\"14\"><rect x=\"5.5\" y=\"5.5\" width=\"8\" height=\"8\" rx=\"1\"/><path d=\"M10.5 5.5V3.5a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2\"/></svg><svg class=\"ds-ic-done\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" width=\"14\" height=\"14\"><path d=\"M3 8.5l3 3 7-7\"/></svg><span>Copy</span></button></div></div>",
+      "css": ".ds-copy{appearance:none;border:0;border-left:1px solid rgba(31,61,43,.42);background:#1F3D2B;color:#E6EEE3;font-family:\"Barlow\",system-ui,sans-serif;font-weight:600;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;min-height:38px;min-width:44px;padding:0 12px;display:inline-flex;align-items:center;gap:7px;cursor:pointer;border-radius:0;transition:background-color .15s ease}.ds-copy:hover{background:#16301F}.ds-copy:active{background:#102417}.ds-copy:focus-visible{outline:2px solid #E6EEE3;outline-offset:-3px;border-radius:2px}.ds-copy svg{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}.ds-copy .ds-ic-done{display:none}.ds-code.is-copied .ds-copy .ds-ic-copy{display:none}.ds-code.is-copied .ds-copy .ds-ic-done{display:block}.ds-code{margin:0;border:1px solid #141A16;background:#F1F5EE;position:relative;border-radius:0;max-width:70ch}.ds-code-h{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(31,61,43,.42);padding:0 0 0 12px;min-height:38px;font-family:\"Barlow\",system-ui,sans-serif;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#44544A}.ds-code-h::after{content:'';position:absolute;left:0;top:37px;height:2px;width:0;background:#1F3D2B;transition:width .6s cubic-bezier(.16,1,.3,1)}.ds-code.is-copied .ds-code-h::after{width:100%}.ds-code pre{margin:0;padding:14px 16px;overflow:auto;font-family:\"JetBrains Mono\",ui-monospace,Menlo,Consolas,monospace;font-size:.86rem;line-height:1.6;color:#141A16;tab-size:2;scrollbar-width:thin;scrollbar-color:rgba(31,61,43,.42) transparent}@media (prefers-reduced-motion:reduce){.ds-code-h::after{transition:none}.ds-copy{transition:none}}"
+    },
+    {
+      "name": "Code Field",
+      "kind": "card",
+      "refersTo": "code-field",
+      "description": "Ruled, field-colored block for a prompt or config, with language label and copy tab in its header; scrolls horizontally when needed.",
+      "html": "<div class=\"ds-code\"><div class=\"ds-code-h\"><span>json</span><button type=\"button\" class=\"ds-copy\" aria-label=\"Copy this block\"><svg class=\"ds-ic-copy\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" width=\"14\" height=\"14\"><rect x=\"5.5\" y=\"5.5\" width=\"8\" height=\"8\" rx=\"1\"/><path d=\"M10.5 5.5V3.5a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2\"/></svg><svg class=\"ds-ic-done\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" width=\"14\" height=\"14\"><path d=\"M3 8.5l3 3 7-7\"/></svg><span>Copy</span></button></div><pre><code>{\n  \"model\": \"claude\",\n  \"temperature\": 0.2\n}</code></pre></div>",
+      "css": ".ds-code{margin:0;border:1px solid #141A16;background:#F1F5EE;position:relative;border-radius:0;max-width:70ch}.ds-code-h{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(31,61,43,.42);padding:0 0 0 12px;min-height:38px;font-family:\"Barlow\",system-ui,sans-serif;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#44544A}.ds-code-h::after{content:'';position:absolute;left:0;top:37px;height:2px;width:0;background:#1F3D2B;transition:width .6s cubic-bezier(.16,1,.3,1)}.ds-code.is-copied .ds-code-h::after{width:100%}.ds-code pre{margin:0;padding:14px 16px;overflow:auto;font-family:\"JetBrains Mono\",ui-monospace,Menlo,Consolas,monospace;font-size:.86rem;line-height:1.6;color:#141A16;tab-size:2;scrollbar-width:thin;scrollbar-color:rgba(31,61,43,.42) transparent}@media (prefers-reduced-motion:reduce){.ds-code-h::after{transition:none}.ds-copy{transition:none}}.ds-copy{appearance:none;border:0;border-left:1px solid rgba(31,61,43,.42);background:#1F3D2B;color:#E6EEE3;font-family:\"Barlow\",system-ui,sans-serif;font-weight:600;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;min-height:38px;min-width:44px;padding:0 12px;display:inline-flex;align-items:center;gap:7px;cursor:pointer;border-radius:0;transition:background-color .15s ease}.ds-copy:hover{background:#16301F}.ds-copy:active{background:#102417}.ds-copy:focus-visible{outline:2px solid #E6EEE3;outline-offset:-3px;border-radius:2px}.ds-copy svg{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}.ds-copy .ds-ic-done{display:none}.ds-code.is-copied .ds-copy .ds-ic-copy{display:none}.ds-code.is-copied .ds-copy .ds-ic-done{display:block}"
+    },
+    {
+      "name": "Code Field (slot)",
+      "kind": "card",
+      "refersTo": "code-field-slot",
+      "description": "An unfilled code slot: dashed frame, 12px quad grid on deeper stock, muted copy tab that returns to cloth on hover.",
+      "html": "<div class=\"ds-code is-slot\"><div class=\"ds-code-h\"><span>text</span><button type=\"button\" class=\"ds-copy\" aria-label=\"Copy this block\"><svg class=\"ds-ic-copy\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" width=\"14\" height=\"14\"><rect x=\"5.5\" y=\"5.5\" width=\"8\" height=\"8\" rx=\"1\"/><path d=\"M10.5 5.5V3.5a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2\"/></svg><svg class=\"ds-ic-done\" viewBox=\"0 0 16 16\" aria-hidden=\"true\" width=\"14\" height=\"14\"><path d=\"M3 8.5l3 3 7-7\"/></svg><span>Copy</span></button></div><pre><code>[PASTE THE BUILD PROMPT HERE]</code></pre></div>",
+      "css": ".ds-code{margin:0;border:1px solid #141A16;background:#F1F5EE;position:relative;border-radius:0;max-width:70ch}.ds-code-h{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(31,61,43,.42);padding:0 0 0 12px;min-height:38px;font-family:\"Barlow\",system-ui,sans-serif;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#44544A}.ds-code-h::after{content:'';position:absolute;left:0;top:37px;height:2px;width:0;background:#1F3D2B;transition:width .6s cubic-bezier(.16,1,.3,1)}.ds-code.is-copied .ds-code-h::after{width:100%}.ds-code pre{margin:0;padding:14px 16px;overflow:auto;font-family:\"JetBrains Mono\",ui-monospace,Menlo,Consolas,monospace;font-size:.86rem;line-height:1.6;color:#141A16;tab-size:2;scrollbar-width:thin;scrollbar-color:rgba(31,61,43,.42) transparent}@media (prefers-reduced-motion:reduce){.ds-code-h::after{transition:none}.ds-copy{transition:none}}.ds-code.is-slot{border-style:dashed;background:linear-gradient(rgba(31,61,43,.13) 1px,transparent 1px) 0 0/12px 12px,linear-gradient(90deg,rgba(31,61,43,.13) 1px,transparent 1px) 0 0/12px 12px,#DCE6D8}.ds-code.is-slot .ds-code-h{border-bottom-style:dashed}.ds-code.is-slot pre{color:#44544A}.ds-code.is-slot .ds-copy{background:#44544A}.ds-code.is-slot .ds-copy:hover{background:#1F3D2B}.ds-copy{appearance:none;border:0;border-left:1px solid rgba(31,61,43,.42);background:#1F3D2B;color:#E6EEE3;font-family:\"Barlow\",system-ui,sans-serif;font-weight:600;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;min-height:38px;min-width:44px;padding:0 12px;display:inline-flex;align-items:center;gap:7px;cursor:pointer;border-radius:0;transition:background-color .15s ease}.ds-copy:hover{background:#16301F}.ds-copy:active{background:#102417}.ds-copy:focus-visible{outline:2px solid #E6EEE3;outline-offset:-3px;border-radius:2px}.ds-copy svg{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}.ds-copy .ds-ic-done{display:none}.ds-code.is-copied .ds-copy .ds-ic-copy{display:none}.ds-code.is-copied .ds-copy .ds-ic-done{display:block}"
+    },
+    {
+      "name": "Entry Strip",
+      "kind": "custom",
+      "refersTo": "entry-strip",
+      "description": "The preprinted No. | Title | Date header row above every entry; stacks to two rows at 600px and below.",
+      "html": "<div class=\"ds-strip\"><div class=\"ds-no\"><small>No.</small>7</div><div class=\"ds-ttl\"><h3>Agent config: planner</h3></div><div class=\"ds-date\">2026-10-28</div></div>",
+      "css": ".ds-strip{display:grid;grid-template-columns:auto minmax(0,1fr) auto;border-top:1px solid #141A16;border-bottom:1px solid #141A16;font-family:\"Barlow\",system-ui,sans-serif;align-items:stretch;color:#141A16;max-width:70ch}.ds-strip>*{padding:9px 12px;display:flex;align-items:center;gap:8px;min-height:46px}.ds-strip>*+*{border-left:1px solid rgba(31,61,43,.42)}.ds-strip .ds-no{font-family:\"Barlow Semi Condensed\",\"Barlow\",system-ui,sans-serif;font-weight:700;font-size:1.05rem;color:#44544A;white-space:nowrap;font-variant-numeric:tabular-nums}.ds-strip .ds-no small{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#566559}.ds-strip h3{margin:0;font-weight:600;font-size:1.15rem;line-height:1.25;letter-spacing:-.005em}.ds-strip .ds-date{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:#44544A;white-space:nowrap;font-variant-numeric:tabular-nums}@media (max-width:600px){.ds-strip{grid-template-columns:auto 1fr}.ds-strip .ds-no{order:1}.ds-strip .ds-date{order:2;justify-content:flex-end}.ds-strip .ds-ttl{order:3;grid-column:1 / -1;border-left:0;border-top:1px solid rgba(31,61,43,.42)}}"
+    },
+    {
+      "name": "Failed Entry Strip with Stamp",
+      "kind": "chip",
+      "refersTo": "stamp",
+      "description": "Section 4 only: the title struck through in stamp red and the rotated 'didn't work' stamp beside it. The only use of stamp red.",
+      "html": "<div class=\"ds-strip ds-failed\"><div class=\"ds-no\"><small>No.</small>9</div><div class=\"ds-ttl\"><h3>One-shot rewrite</h3><span class=\"ds-stamp\">didn’t work</span></div><div class=\"ds-date ds-undated\">undated</div></div>",
+      "css": ".ds-strip{display:grid;grid-template-columns:auto minmax(0,1fr) auto;border-top:1px solid #141A16;border-bottom:1px solid #141A16;font-family:\"Barlow\",system-ui,sans-serif;align-items:stretch;color:#141A16;max-width:70ch}.ds-strip>*{padding:9px 12px;display:flex;align-items:center;gap:8px;min-height:46px}.ds-strip>*+*{border-left:1px solid rgba(31,61,43,.42)}.ds-strip .ds-no{font-family:\"Barlow Semi Condensed\",\"Barlow\",system-ui,sans-serif;font-weight:700;font-size:1.05rem;color:#44544A;white-space:nowrap;font-variant-numeric:tabular-nums}.ds-strip .ds-no small{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#566559}.ds-strip h3{margin:0;font-weight:600;font-size:1.15rem;line-height:1.25;letter-spacing:-.005em}.ds-strip .ds-date{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:#44544A;white-space:nowrap}.ds-strip .ds-undated{color:#566559}.ds-failed h3{text-decoration:line-through;text-decoration-color:rgba(179,38,30,.85);text-decoration-thickness:2px}.ds-stamp{display:inline-block;font-family:\"Barlow Semi Condensed\",\"Barlow\",system-ui,sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#B3261E;border:2px solid #B3261E;padding:2px 7px 1px;border-radius:2px;transform:rotate(-4deg);mix-blend-mode:multiply;line-height:1.2;white-space:nowrap}"
+    },
+    {
+      "name": "Ruled Fields",
+      "kind": "input",
+      "refersTo": "field-label",
+      "description": "The 'What it's for' / 'What I learned' rows: 132px uppercase label column, serif value, Rule Soft dividers, Rule closing line. Inline slots show as quad-gridded dashed spans.",
+      "html": "<dl class=\"ds-dl\"><div class=\"ds-field\"><dt>What it’s for</dt><dd>One line on what this creates or assembles.</dd></div><div class=\"ds-field\"><dt>What I learned</dt><dd><span class=\"ds-slot\">[One line.]</span></dd></div></dl>",
+      "css": ".ds-dl{margin:0;max-width:70ch;font-family:\"Source Serif 4\",Georgia,serif;font-size:17px;line-height:1.6;color:#141A16}.ds-field{display:grid;grid-template-columns:132px minmax(0,1fr);gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid rgba(31,61,43,.18)}.ds-field:last-child{border-bottom:1px solid rgba(31,61,43,.42)}.ds-field dt{margin:0;font-family:\"Barlow\",system-ui,sans-serif;font-weight:600;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:#44544A;padding-top:.25em}.ds-field dd{margin:0}.ds-slot{font-family:\"Barlow\",system-ui,sans-serif;font-weight:500;font-size:.92em;letter-spacing:.01em;color:#44544A;background:linear-gradient(rgba(31,61,43,.13) 1px,transparent 1px) 0 0/8px 8px,linear-gradient(90deg,rgba(31,61,43,.13) 1px,transparent 1px) 0 0/8px 8px;border-bottom:1px dashed #44544A;padding:0 .3em}@media (max-width:600px){.ds-field{grid-template-columns:1fr;gap:3px}}"
+    },
+    {
+      "name": "Rail (contents navigation)",
+      "kind": "nav",
+      "refersTo": "rail-link",
+      "description": "Sticky desktop contents list: ruled rows of number, name, count; the active row turns cloth and bold.",
+      "html": "<nav class=\"ds-rail\" aria-label=\"Contents\"><p class=\"ds-rail-h\">Contents</p><ol><li><a href=\"#\"><span class=\"ds-rno\">1</span><span>Build prompts</span><span class=\"ds-ct\">3</span></a></li><li class=\"is-active\"><a href=\"#\"><span class=\"ds-rno\">2</span><span>Research</span><span class=\"ds-ct\">3</span></a></li><li><a href=\"#\"><span class=\"ds-rno\">3</span><span>Agent configs</span><span class=\"ds-ct\">2</span></a></li><li class=\"ds-appendix\"><a href=\"#\"><span class=\"ds-rno\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4.5L12 8l-3.5 3.5\"/></svg></span><span>How I add an entry</span></a></li></ol></nav>",
+      "css": ".ds-rail{width:232px;font-family:\"Barlow\",system-ui,sans-serif;color:#141A16}.ds-rail-h{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:#44544A;margin:0 0 8px;font-weight:600}.ds-rail ol{list-style:none;margin:0;padding:0;border-top:1px solid #141A16}.ds-rail li{border-bottom:1px solid rgba(31,61,43,.18)}.ds-rail a{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:baseline;padding:9px 2px;color:#141A16;text-decoration:none;font-size:.95rem;font-weight:500;line-height:1.3}.ds-rail a:hover{color:#1F3D2B}.ds-rail a:focus-visible{outline:2px solid #1F3D2B;outline-offset:3px;border-radius:2px}.ds-rail .ds-rno{font-family:\"Barlow Semi Condensed\",\"Barlow\",system-ui,sans-serif;font-weight:700;color:#44544A;font-variant-numeric:tabular-nums}.ds-rail .ds-ct{font-size:.78rem;color:#566559;font-variant-numeric:tabular-nums}.ds-rail li.is-active{border-bottom-color:#141A16}.ds-rail li.is-active a,.ds-rail li.is-active .ds-rno{color:#1F3D2B;font-weight:700}.ds-rail .ds-appendix a{grid-template-columns:28px 1fr;font-weight:400;color:#44544A;font-size:.88rem}.ds-rail .ds-appendix svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px}"
+    },
+    {
+      "name": "Contents Table",
+      "kind": "nav",
+      "refersTo": "contents-row",
+      "description": "The first ruled block in the column: section number, name and description, and the entry count, closed by an Ink rule.",
+      "html": "<section class=\"ds-contents\"><div class=\"ds-contents-h\"><h2>Contents</h2><span>11 entries</span></div><ol><li><a href=\"#\"><span class=\"ds-cno\">1</span><span><span class=\"ds-cname\">Build prompts</span><span class=\"ds-cwhat\">Prompts that create or assemble a thing.</span></span><span class=\"ds-cct\"><b>3</b>0 filled</span></a></li><li><a href=\"#\"><span class=\"ds-cno\">2</span><span><span class=\"ds-cname\">Research</span><span class=\"ds-cwhat\">Prompts that investigate, compare, or rank tools.</span></span><span class=\"ds-cct\"><b>3</b>entries</span></a></li></ol></section>",
+      "css": ".ds-contents{border-top:2px solid #141A16;font-family:\"Barlow\",system-ui,sans-serif;color:#141A16;max-width:70ch}.ds-contents-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0 8px;border-bottom:1px solid #141A16}.ds-contents-h h2{margin:0;font-family:\"Barlow Semi Condensed\",\"Barlow\",system-ui,sans-serif;font-weight:700;font-size:1.25rem;letter-spacing:.02em;text-transform:uppercase}.ds-contents-h span{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:#44544A}.ds-contents ol{list-style:none;margin:0;padding:0}.ds-contents li{border-bottom:1px solid rgba(31,61,43,.18)}.ds-contents li:last-child{border-bottom:1px solid #141A16}.ds-contents a{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:14px;align-items:baseline;padding:12px 0;color:#141A16;text-decoration:none}.ds-contents a:hover .ds-cname{color:#1F3D2B;text-decoration:underline;text-underline-offset:.2em;text-decoration-color:rgba(31,61,43,.42)}.ds-cno{font-family:\"Barlow Semi Condensed\",\"Barlow\",system-ui,sans-serif;font-weight:700;font-size:1.35rem;line-height:1;color:#44544A;font-variant-numeric:tabular-nums}.ds-cname{font-weight:600;font-size:1.05rem;display:block}.ds-cwhat{display:block;font-family:\"Source Serif 4\",Georgia,serif;font-size:.95rem;color:#44544A;margin-top:2px;line-height:1.45}.ds-cct{font-size:.8rem;letter-spacing:.04em;color:#44544A;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}.ds-cct b{display:block;font-family:\"Barlow Semi Condensed\",\"Barlow\",system-ui,sans-serif;font-weight:700;font-size:1.35rem;line-height:1;color:#141A16;letter-spacing:0}"
+    },
+    {
+      "name": "Cover Band and Plate",
+      "kind": "card",
+      "refersTo": "cover-plate",
+      "description": "The masthead: a cloth band with a 24px quad grid, carrying a label-colored plate with a double frame, the display title, the serif intro, and a three-cell ruled footer.",
+      "html": "<header class=\"ds-cover\"><div class=\"ds-plate\"><div class=\"ds-plate-body\"><h1 class=\"ds-title\">Prompt Library</h1><p class=\"ds-intro\"><strong>How to read this.</strong> This is my working notebook, turned public.</p></div><div class=\"ds-plate-foot\"><div><span>Kept alongside</span> <b><a href=\"#\">Building from Zero</a></b></div><div><span>Last revised</span> <b>2026-10-28</b></div><div><span>Entries</span> <b>11</b></div></div></div></header>",
+      "css": ".ds-cover{background-color:#1F3D2B;background-image:linear-gradient(rgba(230,238,227,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(230,238,227,.09) 1px,transparent 1px);background-size:24px 24px,24px 24px;color:#E6EEE3;padding:clamp(20px,3vw,36px) clamp(16px,4vw,48px) clamp(22px,3vw,36px);border-bottom:6px solid #16301F}.ds-plate{background:#F3F6EF;color:#141A16;max-width:680px;border:1px solid #141A16;box-shadow:0 10px 24px -8px rgba(0,0,0,.45);padding:6px 6px 0;border-radius:0}.ds-plate-body{border:1px solid rgba(31,61,43,.18);border-bottom:0;padding:clamp(14px,2.6vw,22px) clamp(14px,2.6vw,24px) clamp(14px,2.6vw,20px)}.ds-title{font-family:\"Barlow Semi Condensed\",\"Barlow\",system-ui,sans-serif;font-weight:700;line-height:.95;letter-spacing:-.01em;font-size:clamp(2.6rem,7vw,4.6rem);margin:0 0 14px;text-wrap:balance}.ds-intro{margin:0;max-width:52ch;font-family:\"Source Serif 4\",Georgia,serif;font-size:1.02rem;line-height:1.55}.ds-intro strong{font-family:\"Barlow\",system-ui,sans-serif;font-weight:600;font-size:.95em}.ds-plate-foot{display:grid;grid-template-columns:auto 1fr 1fr;margin:0 -6px 0;border-top:1px solid #141A16;font-family:\"Barlow\",system-ui,sans-serif;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#44544A}.ds-plate-foot>div{padding:10px clamp(18px,2.6vw,30px) 11px;min-height:44px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:3px}.ds-plate-foot>div+div{border-left:1px solid #141A16}.ds-plate-foot b{color:#141A16;font-weight:600;letter-spacing:.02em;text-transform:none;font-size:.95rem;font-variant-numeric:tabular-nums}.ds-plate-foot a{color:#141A16;text-decoration-thickness:1px;text-underline-offset:.18em;text-decoration-color:rgba(31,61,43,.42)}.ds-plate-foot a:hover{color:#1F3D2B;text-decoration-color:#1F3D2B}@media (max-width:600px){.ds-plate-foot{grid-template-columns:1fr}.ds-plate-foot>div+div{border-left:0;border-top:1px solid rgba(31,61,43,.42)}.ds-plate-foot>div{min-height:40px;padding-top:8px;padding-bottom:8px;flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap}}"
+    },
+    {
+      "name": "Section Head",
+      "kind": "custom",
+      "refersTo": "numeral",
+      "description": "Cloth numeral beside a condensed headline over a 2px Ink rule, with the count label beneath.",
+      "html": "<div class=\"ds-section-h\"><span class=\"ds-sno\" aria-hidden=\"true\">4</span><h2>Failed prompts</h2><span class=\"ds-sct\">3 entries</span></div>",
+      "css": ".ds-section-h{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:end;border-bottom:2px solid #141A16;padding-bottom:10px;max-width:70ch;color:#141A16}.ds-sno{font-family:\"Barlow Semi Condensed\",\"Barlow\",system-ui,sans-serif;font-weight:700;font-size:clamp(2.6rem,5vw,3.4rem);line-height:.85;color:#1F3D2B;font-variant-numeric:tabular-nums;letter-spacing:-.02em}.ds-section-h h2{margin:0;font-family:\"Barlow Semi Condensed\",\"Barlow\",system-ui,sans-serif;font-weight:700;font-size:clamp(1.7rem,3.4vw,2.3rem);line-height:1;letter-spacing:-.005em;text-wrap:balance}.ds-sct{grid-column:2;font-family:\"Barlow\",system-ui,sans-serif;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:#44544A;margin-top:4px}"
+    },
+    {
+      "name": "Text Link and Inline Code",
+      "kind": "custom",
+      "refersTo": "inline-code",
+      "description": "Body-copy link (cloth text, Rule underline that turns cloth on hover) and the inline code chip.",
+      "html": "<p class=\"ds-p\">Everything here comes from <a href=\"#\">one markdown file</a>; wrap a placeholder like <code class=\"ds-code-inline\">[THIS]</code> and it renders as a slot.</p>",
+      "css": ".ds-p{font-family:\"Source Serif 4\",Georgia,serif;font-size:17px;line-height:1.6;color:#141A16;max-width:70ch;margin:0}.ds-p a{color:#1F3D2B;text-decoration-thickness:1px;text-underline-offset:.18em;text-decoration-color:rgba(31,61,43,.42)}.ds-p a:hover{text-decoration-color:#1F3D2B}.ds-p a:focus-visible{outline:2px solid #1F3D2B;outline-offset:3px;border-radius:2px}.ds-code-inline{font-family:\"JetBrains Mono\",ui-monospace,Menlo,Consolas,monospace;font-size:.88em;background:#F1F5EE;border:1px solid rgba(31,61,43,.18);padding:.05em .35em;border-radius:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Engineering Lab Notebook",
+    "overview": "The page is a bound computation pad, not a docs site and not a card gallery. The ground is pale eye-ease green stock; a bottle-green cloth band carries the cover and every control; the only other color in the world is one stamp red, spent on nothing but the \"didn't work\" mark. Structure is drawn with hairline rules, the way a preprinted ledger is: entries sit under a ruled No. | Title | Date strip, prompts sit in a ruled code field with a cloth-colored copy tab in its header, and the one-line fields beneath are ruled rows with small uppercase labels in the left margin. The fine quad grid lives only on the frame (the cloth cover, the empty slots) and never behind running text.\n\nDensity is deliberate and even. The reading column is capped at 70 characters, entries are separated by rules rather than by space, and every number on the page (entry numbers, section numbers, counts) is set in condensed signage lettering with tabular figures. There is no hero, no feature grid, no call to action; the cover plate states what this is and when it was last revised, and the contents table is the first thing in the column.\n\nHonesty in both states is a visual rule, not just a product one: an unfilled slot is drawn as a dashed quad-grid field in the muted stock, with the bracketed placeholder inside, and a failed entry keeps its number and its place with the title struck through in stamp red.",
+    "keyCharacteristics": [
+      "Rules, not boxes: hierarchy is drawn with 1px and 2px ink rules; filled surfaces are the cloth band, the cover plate, and the code field only.",
+      "Three voices of type: condensed signage for numbers and headings, Barlow for labels and controls, Source Serif 4 for running text; JetBrains Mono for anything copyable.",
+      "One accent surface (bottle-green cloth) and one spot color (stamp red) with a single job each.",
+      "Flat by default; a single soft drop shadow lifts the cover plate off the cloth.",
+      "Quad grid confined to the frame; prose always sits on plain stock."
+    ],
+    "rules": [
+      {
+        "name": "The One Stamp Rule",
+        "body": "Stamp red appears only on the \"didn't work\" stamp and the strike-through it accompanies. It is never a link, a button, an error field, or an accent.",
+        "section": "colors"
+      },
+      {
+        "name": "The Cloth Carries Controls Rule",
+        "body": "Every interactive fill is bottle-green cloth on cloth-ink text. A control on a slot field drops to Ink 2 and only returns to cloth on hover.",
+        "section": "colors"
+      },
+      {
+        "name": "The Grid on the Frame Rule",
+        "body": "The quad grid may sit under the cloth band and inside empty slots. It never sits behind running text or a filled code block.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Number Rule",
+        "body": "Every number that can be compared with another (entry No., section number, counts, dates) is set in the condensed face with font-variant-numeric: tabular-nums.",
+        "section": "typography"
+      },
+      {
+        "name": "The Preprinted Voice Rule",
+        "body": "Labels and controls are Barlow in small uppercase with letter-spacing between 0.06em and 0.14em; running text is never tracked, never uppercase, never sans.",
+        "section": "typography"
+      },
+      {
+        "name": "The Seventy-Character Rule",
+        "body": "Running text never exceeds the 70ch measure, and the cover intro never exceeds 52ch.",
+        "section": "layout"
+      },
+      {
+        "name": "The Rail Is Optional Rule",
+        "body": "The sticky rail is a desktop convenience; the contents table in the column is the navigation and must stand on its own at every width.",
+        "section": "layout"
+      },
+      {
+        "name": "The One Shadow Rule",
+        "body": "The cover plate is the only element with a shadow. Everything else is flat and separated by a rule or a tonal change.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do draw structure with rules: 1px Ink for frames, 2px Ink for heads, Rule and Rule Soft for internal dividers.",
+      "Do set every comparable number in Barlow Semi Condensed 700 with tabular figures.",
+      "Do put every control on cloth with cloth-ink text, and let hover deepen to Cloth Deep.",
+      "Do render an unfilled slot as a dashed, quad-gridded field in muted stock with the bracketed text visible.",
+      "Do keep running text in Source Serif 4 at 17px / 1.6 within a 70ch measure.",
+      "Do reflow the entry strip and ruled fields at 600px and reveal the rail only at 1024px.",
+      "Do honor prefers-reduced-motion by removing the copied-rule and tab transitions, keeping the text swap."
+    ],
+    "donts": [
+      "Don't use stamp red anywhere except the \"didn't work\" stamp and its strike-through.",
+      "Don't put the quad grid behind running text or a filled code block; it belongs to the cloth band and the empty slots.",
+      "Don't add a shadow to anything but the cover plate.",
+      "Don't round corners beyond the 2px hairline on stamp, inline code and focus ring; containers are square.",
+      "Don't add a hero, feature grid, card grid, or call-to-action button; the contents table and the copy tab are the only actions.",
+      "Don't set running text in a sans, in uppercase, or with tracking; that voice is reserved for preprinted labels and controls.",
+      "Don't introduce a second accent surface or a second button style; the copy tab is the button."
+    ]
+  }
+}
